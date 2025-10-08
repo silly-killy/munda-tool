@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Necromunda Battle Utility — Steel & Blood</title>
+<style>
+  /* ===== Dark Metallic Silver + Red (Mobile-first) ===== */
+  :root{
+    --bg:#0b0d12;           /* deep steel */
+    --panel:#14161a;        /* gunmetal panel */
+    --plate:#0f1218;        /* inner plate */
+    --text:#e6e8ed;         /* silver text */
+    --muted:#9aa3b2;        /* worn label */
+    --border:#252a33;       /* seams */
+    --edge:#3a4250;         /* bevel */
+    --accent:#dc2626;       /* blood red */
+    --accent2:#ef4444;      /* hot red */
+    --ok:#22c55e; --warn:#f59e0b; --danger:#ef4444; --chip:#0e1117;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial; color:var(--text);
+    background:
+      radial-gradient(1200px 800px at 20% -20%, rgba(220,38,38,.08), transparent),
+      radial-gradient(900px 700px at 110% 120%, rgba(239,68,68,.06), transparent),
+      repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 1px, transparent 1px 4px), /* brushed vertical */
+      repeating-linear-gradient(90deg, rgba(255,255,255,.02) 0 1px, transparent 1px 3px), /* brushed horizontal */
+      linear-gradient(180deg, #0b0d12, #0b0d12);
+  }
+  /* subtle metallic noise */
+  body::after{
+    content:""; position:fixed; inset:0; pointer-events:none; opacity:.055; mix-blend-mode:overlay;
+    background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3"/></filter><rect width="140" height="140" filter="url(%23n)" opacity="0.35" fill="none"/></svg>');
+  }
+
+  header{position:sticky;top:0;z-index:10;background:rgba(11,13,18,.92);backdrop-filter:blur(6px);border-bottom:2px solid var(--edge)}
+  .container{max-width:1180px;margin:0 auto;padding:12px}
+  h1{margin:0;font-size:18px;letter-spacing:.4px}
+  .brand{display:flex;gap:10px;align-items:center}
+  .badge{width:18px;height:18px;border-radius:4px;background:linear-gradient(135deg,#dc2626,transparent 60%), linear-gradient(180deg,#2c2f36,#101319); box-shadow:0 0 0 2px #2b3038,inset 0 2px 2px #000}
+  .tabs{display:flex;gap:8px;margin-top:8px;overflow:auto}
+  .tab-btn{border:1px solid var(--border);background:linear-gradient(180deg,var(--plate),#0b0d12);color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer;white-space:nowrap}
+  .tab-btn.active{background: var(--accent)}
+
+  main{padding:12px}
+  .grid{display:grid;gap:10px}
+  .g2{grid-template-columns:1fr}
+  @media (min-width: 820px){ .g2{grid-template-columns:repeat(2,minmax(0,1fr))} }
+
+  .panel{background:linear-gradient(180deg,var(--panel),#0e1015);border:1px solid var(--border);border-radius:12px;padding:12px;box-shadow:0 0 0 2px #000 inset, 0 6px 14px #0008}
+  .panel h2{margin:0 0 8px;font-size:17px}
+  label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+  select,input[type="text"],input[type="number"]{width:100%;background:#0a0c10;border:1px solid var(--border);border-radius:10px;color:var(--text);padding:10px}
+  select::after:hover{width:100%;background:#0a0c10;border:1px solid var(--border);border-radius:10px;color:var(--text);padding:10px}
+  .btn{border:1px solid var(--border);background:linear-gradient(180deg,#1c2027,#0e1117);color:var(--text);padding:10px 12px;border-radius:10px;cursor:pointer;display:inline-flex;justify-content:center;align-items:center;line-height:1.1}
+  .btn:active{transform:translateY(1px)}
+  .btn:hover{filter:brightness(1.08)}
+  .primary{background:linear-gradient(180deg,var(--accent),#6b1b1b);border-color:#3d0d0d}
+  .ok{background:linear-gradient(180deg,#2fb168,#124a2b);border-color:#143621;color:#eaffef}
+  .warn{background:linear-gradient(180deg,#f59e0b,#8a5c05);border-color:#4a3002}
+  .danger{background:linear-gradient(180deg,#ef4444,#7a1414);border-color:#3a0a0a}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .right{margin-left:auto}
+  table{width:100%;border-collapse:collapse;}
+  th,td{padding:10px;border-top:1px solid var(--border);text-align:left;vertical-align:top}
+  th{color:var(--muted);font-weight:600;border-bottom:1px solid var(--border)}
+  .chip{display:inline-flex;gap:6px;align-items:center;background:#0e1117;border:1px solid var(--border);border-radius:999px;padding:4px 8px;font-size:12px}
+  .muted{color:var(--muted);font-size:12px}
+  .card{border:1px solid var(--border);background:linear-gradient(180deg,var(--panel),#0e1015);border-radius:10px;padding:10px}
+  textarea{width:100%;min-height:260px;background:#0a0c10;border:1px solid var(--border);border-radius:10px;color:var(--text);padding:10px;white-space:pre}
+  .checklist{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
+  .check{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--border);background:#0a0c10;border-radius:10px;padding:10px}
+
+  td, th {
+    vertical-align: middle;
+  }
+
+  label.check div {padding-top: 15px}
+
+  /* Larger tap targets on mobile */
+  button, select, input { min-height: 42px; }
+
+  /* XP button grid for alignment */
+  .xp-grid{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+  .xp-grid .btn{width:100%}
+
+  /* modal */
+  .backdrop{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;z-index:50}
+  .modal{width:min(760px,92vw);max-height:80vh;overflow:auto;background:linear-gradient(180deg,var(--panel),#0e1015);border:1px solid var(--border);border-radius:12px;padding:12px}
+  /* Clickable tactic chips */
+  button.chip{appearance:none;cursor:pointer}
+  .tactic-chip:hover,.tactic-chip:focus{outline:1px solid var(--accent)}
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <div class="row">
+    <div class="brand"><div class="badge"></div><h1>Necromunda Utility</h1></div>
+      <div class="right row">
+        <button class="btn danger" id="resetBtn" title="Clear saved data and restore defaults">Reset</button>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="setup">Setup</button>
+      <button class="tab-btn" data-tab="tracking">Battle Tracking</button>
+      <button class="tab-btn" data-tab="report">Battle Report</button>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <!-- ===== SETUP ===== -->
+  <section id="setup">
+    <div class="grid g2">
+      <div class="panel">
+        <h2>Scenario</h2>
+        <div class="row">
+          <select id="scenarioSel" style="flex:1"></select>
+          <button class="btn" id="scenarioRnd">Random</button>
+          <button class="btn" id="scenarioInfo">Details</button>
+        </div>
+      </div>
+
+      <div class="panel" style="grid-column:1/-1">
+        <h2>My Gang & Opponents</h2>
+        <div class="grid g2">
+          <div>
+            <label>My Gang</label>
+            <select id="myGangSel"></select>
+            <div class="row" style="margin-top:6px">
+              <input id="rndMyCount" type="number" min="1" value="1" style="width:110px">
+              <button class="btn" id="rndMyBtn">Add Random</button>
+              <button class="btn warn" id="clearMyBtn">Clear</button>
+              <span class="chip">Selected: <span id="myCount">0</span></span>
+              <span class="chip">Total Rating: <span id="myRating">0</span></span>
+            </div>
+          </div>
+          <div>
+            <label>Opponent Gangs (checkboxes)</label>
+            <div id="oppChecks" class="checklist"></div>
+          </div>
+        </div>
+        <div id="myTableWrap" style="margin-top:10px"></div>
+      </div>
+
+      <div class="panel" style="grid-column:1/-1">
+        <h2>Tactic Decks & Pool</h2>
+        <div class="muted" style="margin-bottom:6px">Select any number of decks (e.g., Normal + Underdog). Selected cards persist even if you deselect a deck later.</div>
+        <div id="deckChecks" class="checklist" style="margin-bottom:8px"></div>
+        <div class="row" style="margin-bottom:8px">
+          <input id="rndTacCount" type="number" min="1" value="1" style="width:110px">
+          <button class="btn" id="rndTacBtn">Add Random From Pool</button>
+          <button class="btn warn" id="clearTacBtn">Clear Selected</button>
+          <span class="chip">Selected: <span id="tacCount">0</span></span>
+        </div>
+        <div id="tacTableWrap"></div>
+      </div>
+
+      <div class="panel" style="grid-column:1/-1">
+        <h2>Bounty Hunters & Hired Guns</h2>
+        <div class="muted" style="margin-bottom:6px">Enable pools and pick fighters to add to your roster for this battle.</div>
+        <div id="hirePoolChecks" class="checklist" style="margin-bottom:8px"></div>
+        <div class="row" style="margin-bottom:8px">
+          <input id="rndHireCount" type="number" min="1" value="1" style="width:110px">
+          <button class="btn" id="rndHireBtn">Add Random From Enabled Pools</button>
+          <button class="btn warn" id="clearHireBtn">Clear Hires</button>
+          <span class="chip">Hires Selected: <span id="hireCount">0</span></span>
+          <span class="chip">Hires Rating: <span id="hireRating">0</span></span>
+        </div>
+        <div id="hireTableWrap"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TRACKING ===== -->
+  <section id="tracking" hidden>
+    <div class="panel"><h2>Battle Tracking</h2>
+      <div class="muted">Log XP per fighter. OoA modal lists enemies based on opponent checkboxes.</div>
+    </div>
+    <div class="panel" id="tacticsInBattle" style="display:none">
+      <h2>Tactics In Play</h2>
+      <div id="tacticsChips" class="row"></div>
+    </div>
+    <div id="trackList" class="grid g2"></div>
+
+    <!-- Lasting Injury Table (D66) -->
+    <div class="panel" id="lastingPanel">
+      <h2>Lasting Injury (D66)</h2>
+      <table>
+        <thead><tr><th style="width:90px">D66</th><th>Lasting Injury</th></tr></thead>
+        <tbody>
+          <tr><td>11</td><td><strong>Lesson Learned:</strong> The fighter goes into Convalescence but gains D3 Experience.</td></tr>
+          <tr><td>12</td><td><strong>Impressive Scars:</strong> The fighter gains a set of impressive scars as testament to their bravery. Increase the fighter's Cool by 1. This bonus only applies once, treat all further results as Out Cold.</td></tr>
+          <tr><td>13</td><td><strong>Horrid Scars:</strong> The fighter has been horrifically disfigured, leaving them with a fearsome visage. The fighter gains the Fearsome skill. If they already have the Fearsome skill, treat this result as Out Cold.</td></tr>
+          <tr><td>14</td><td><strong>Bitter Enmity:</strong> The fighter bears a bitter grudge against the gang that inflicted this injury. When fighting a battle against the gang that inflicted this injury, the fighter gains the Berserker skill. If they already have the Berserker skill or roll this result a second time, treat it as Out Cold.</td></tr>
+          <tr><td>15–26</td><td><strong>Out Cold:</strong> The fighter misses the rest of the battle, but avoids any long term injuries. The fighter recovers in time to perform post-battle actions.</td></tr>
+          <tr><td>31–36</td><td><strong>Convalescence:</strong> The fighter goes into Convalescence.</td></tr>
+          <tr><td>41</td><td><strong>Old Battle Wound:</strong> At the end of each battle this fighter participates in roll a D6, on a 1 the fighter goes into Convalescence.</td></tr>
+          <tr><td>42</td><td><strong>Partially Deafened:</strong> The fighter suffers no penalty if they are partially deafened, however, suffering this injury again reduces their Leadership by 1.</td></tr>
+          <tr><td>43</td><td><strong>Humiliated:</strong> The fighter goes into Convalescence and their Leadership and Cool characteristics are each decreased by 1.</td></tr>
+          <tr><td>44</td><td><strong>Eye Injury:</strong> The fighter goes into Recovery and their Ballistic Skill characteristic is decreased by 1.</td></tr>
+          <tr><td>45</td><td><strong>Hand Injury:</strong> The fighter goes into Recovery and their Weapon Skill characteristic is decreased by 1.</td></tr>
+          <tr><td>46</td><td><strong>Hobbled:</strong> The fighter goes into Recovery and their Movement characteristic is decreased by 1.</td></tr>
+          <tr><td>51</td><td><strong>Spinal Injury:</strong> The fighter goes into Recovery and their Strength characteristic is decreased by 1.</td></tr>
+          <tr><td>52</td><td><strong>Enfeebled:</strong> The fighter goes into Recovery and their Toughness characteristic is decreased by 1.</td></tr>
+          <tr><td>53</td><td><strong>Head Injury:</strong> The fighter goes into Recovery and their Intelligence and Willpower characteristics are each decreased by 1.</td></tr>
+          <tr><td>54</td><td><strong>Multiple Injuries:</strong> The fighter is not dead but has suffered many serious wounds. Roll a further D3 times on this table re-rolling any results of Captured, Multiple Injuries, Memorable Death, Critical Injury or Out Cold.</td></tr>
+          <tr><td>55–56</td><td><strong>Captured:</strong> The fighter might be Captured.</td></tr>
+          <tr><td>61–65</td><td><strong>Critical Injury:</strong> The fighter is in a critical condition – if their injuries are not successfully treated by a visit to the Doc (see Medical Escort) in the post-battle sequence, they will die.</td></tr>
+          <tr><td>66</td><td><strong>Memorable Death:</strong> The fighter is killed instantly – not even the most talented Doc can save them. If the injury was caused by an Attack action, the attacker gains 1 additional XP.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===== REPORT ===== -->
+  <section id="report" hidden>
+    <div class="panel">
+      <h2>Battle Report</h2>
+      <div class="row">
+        <button class="btn primary" id="genBtn">Generate</button>
+        <button class="btn ok" id="copyBtn">Copy</button>
+        <span class="chip">Plain text suitable for campaign logs</span>
+      </div>
+      <textarea id="reportOut" placeholder="Report appears here..."></textarea>
+    </div>
+  </section>
+</main>
+
+<!-- Modal -->
+<div class="backdrop" id="backdrop">
+  <div class="modal">
+    <div class="row" style="justify-content:space-between">
+      <h3 id="modalTitle">Details</h3>
+      <button class="btn" id="closeModal">Close</button>
+    </div>
+    <div id="modalBody" style="margin-top:6px"></div>
+  </div>
+</div>
+
+<script>
+/* ====== Embedded fallback ====== */
+const EMBED = {
+  gangs: [
+    { id:"cot", name:"Carnival Of Terror", fighters:[
+      {id:"cot_lead", name:"Ring Master", role:"Leader", rating:260},
+      {id:"cot_g1", name:"Jester", role:"Ganger", rating:90},
+      {id:"cot_ch1", name:"Fire Performer", role:"Champion", rating:245},
+      {id:"cot_ch2", name:"The Strong Man", role:"Champion", rating:175},
+      {id:"cot_g2", name:"Harlequin", role:"Ganger", rating:95},
+      {id:"cot_g3", name:"The Magician", role:"Ganger", rating:80},
+      {id:"cot_b1", name:"The Freak", role:"Brute", rating:210},
+      {id:"cot_g4", name:"Ricco Nasty", role:"Ganger", rating:80}
+    ]},
+    { id:"orlock", name:"Orlock (Chummers)", fighters:[
+      {id:"ol_lead", name:"Dherik", role:"Leader", rating:195},
+      {id:"ol_ch1", name:"Rivet", role:"Champion", rating:150},
+      {id:"ol_g1", name:"Crank", role:"Ganger", rating:90},
+      {id:"ol_g2", name:"Piston", role:"Ganger", rating:88},
+      {id:"ol_j1", name:"Spark", role:"Juve", rating:55}
+    ]}
+  ],
+  tactics: {
+    decks: [
+      { id:"normal", name:"John's Deck", cards:[
+        {id:"j_click", name:"...Click", text:`Play this gang tactic after an enemy model has completed a Shoot (Basic) action after fully resolving any hits.
+The weapon that was used to make the Shoot (Basic) action immediately runs Out of Ammo as if it had failed an Ammo test.`},
+        {id:"t_medi", name:"Medi-skull", text:"Reroll a single Recovery test within 3\" of the bearer."}
+      ]},
+      { id:"underdog", name:"Underdog Deck", cards:[
+        {id:"t_rad", name:"Test 1", text:"Start of round: choose a point; fighters within 3\" test T or take a Flesh Wound."},
+        {id:"t_scrap", name:"Test 2", text:"Gain D3 creds worth of disposable ammo for this round."}
+      ]}
+    ]
+  },
+  scenarios: [
+    {id:"s_ambush", name:"Ambush", text:"Attacker sets an ambush; defender starts scattered and exposed."},
+    {id:"s_standoff", name:"Stand-off", text:"Even deployment. Last fighter standing. May award participation XP."}
+  ],
+  hires: {
+    pools: [
+      { id:"bounty", name:"Bounty Hunters", fighters:[
+        {id:"bh_kara", name:"Kara Nine-Fingers", role:"Bounty Hunter", rating:160},
+        {id:"bh_razor", name:"Razor Zed", role:"Bounty Hunter", rating:150}
+      ]},
+      { id:"hired", name:"Hired Guns", fighters:[
+        {id:"hg_slate", name:"Slate Jackal", role:"Hired Gun", rating:110},
+        {id:"hg_mags", name:"Mags", role:"Hired Gun", rating:95}
+      ]}
+    ]
+  }
+};
+
+/* ====== State ====== */
+const S = {
+  gangs: EMBED.gangs,
+  tactics: EMBED.tactics,
+  scenarios: EMBED.scenarios,
+  hires: EMBED.hires,
+  myGangId: EMBED.gangs[0]?.id || null,
+  mySelected: [],
+  oppGangIds: [],
+  deckIds: EMBED.tactics.decks[0] ? [EMBED.tactics.decks[0].id] : [],
+  tacticIds: [],
+  scenarioId: EMBED.scenarios[0]?.id || null,
+  selectedHirePoolIds: EMBED.hires.pools[0] ? [EMBED.hires.pools[0].id] : [],
+  selectedHireFighterIds: [],
+  tracking:{} // key -> { xpLog:[{note,xp,ts}], misc:0, ooa:false, serious:0, injuryNotes:[], meta:{type:"gang"|"hire", poolId?} }
+};
+
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const idMap = arr => {const m=new Map();arr.forEach(x=>m.set(x.id,x));return m;};
+const sum = a => a.reduce((x,y)=>x+y,0);
+const randPick = (arr,n)=>{const a=[...arr];const out=[];while(a.length&&out.length<n){out.push(a.splice(Math.floor(Math.random()*a.length),1)[0]);}return out;};
+const isLeadChamp = r => /^(Leader|Champion)$/i.test(r||"");
+const esc = s => (s??"").toString().replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+
+/* ====== Storage ====== */
+function save(){ localStorage.setItem("necro_steel_v1", JSON.stringify(S)); }
+function load(){ const raw=localStorage.getItem("necro_steel_v1"); if(!raw) return false; try{Object.assign(S,JSON.parse(raw));return true;}catch{return false;} }
+
+/* ====== Helpers ====== */
+function getMyGang(){ return S.gangs.find(g=>g.id===S.myGangId); }
+function selectedDecks(){ return S.tactics.decks.filter(d=>S.deckIds.includes(d.id)); }
+function poolCards(){ const seen=new Map(); selectedDecks().forEach(d=>d.cards.forEach(c=>{ if(!seen.has(c.id)) seen.set(c.id,{...c, deckId:d.id, deckName:d.name}); })); return Array.from(seen.values()); }
+function oppFighters(){ const out=[]; S.gangs.filter(g=>S.oppGangIds.includes(g.id)).forEach(g=>{ g.fighters.forEach(f=>out.push({...f, gangId:g.id, gangName:g.name})); }); return out; }
+function findCardAnywhere(id){ for(const d of S.tactics.decks){ const c=d.cards.find(x=>x.id===id); if(c) return {...c, deckId:d.id, deckName:d.name}; } return null; }
+
+function selectedHirePools(){ return S.hires.pools.filter(p=>S.selectedHirePoolIds.includes(p.id)); }
+function hirePoolRoster(){
+  const out=[];
+  selectedHirePools().forEach(p=>{
+    p.fighters.forEach(f=>{
+      out.push({ ...f, id: `${p.id}:${f.id}`, origId:f.id, poolId:p.id, poolName:p.name, type:"hire" });
+    });
+  });
+  return out;
+}
+
+/* ====== Rendering ====== */
+function renderScenario(){ const sel = document.getElementById("scenarioSel"); sel.innerHTML = S.scenarios.map(s=>`<option value="${s.id}">${s.name}</option>`).join(""); sel.value = S.scenarioId || ""; }
+
+function renderOppChecks(){ const wrap=document.getElementById("oppChecks"); wrap.innerHTML = S.gangs.map(g=>{ const chk=S.oppGangIds.includes(g.id)?"checked":""; return `<label class="check"><input type="checkbox" data-opp="${g.id}" ${chk}> <div><strong>${esc(g.name)}</strong></div></label>`; }).join(""); wrap.querySelectorAll("[data-opp]").forEach(i=>{ i.addEventListener("change", e=>{ const id=e.target.getAttribute("data-opp"); if(e.target.checked){ if(!S.oppGangIds.includes(id)) S.oppGangIds.push(id); } else { S.oppGangIds=S.oppGangIds.filter(x=>x!==id);} save(); }); }); }
+
+function renderGangs(){ const my=document.getElementById("myGangSel"); my.innerHTML=S.gangs.map(g=>`<option value="${g.id}">${g.name}</option>`).join(""); my.value=S.myGangId||""; renderOppChecks(); const g=getMyGang(); const wrap=document.getElementById("myTableWrap"); if(!g){ wrap.innerHTML = `<div class="muted">Pick a gang.</div>`; return; } const sel=new Set(S.mySelected); wrap.innerHTML=`<table><thead><tr><th style="width:44px"></th><th>Name</th><th>Role</th><th>Rating</th></tr></thead><tbody>${g.fighters.map(f=>`<tr><td><input type="checkbox" data-f="${f.id}" ${sel.has(f.id)?"checked":""}></td><td>${esc(f.name)}</td><td><span class="chip">${esc(f.role||"—")}</span></td><td>${f.rating??0}</td></tr>`).join("")}</tbody></table>`; wrap.querySelectorAll("[data-f]").forEach(cb=>{ cb.addEventListener("change", e=>{ const id=e.target.getAttribute("data-f"); if(e.target.checked){ if(!S.mySelected.includes(id)) S.mySelected.push(id); if(!S.tracking[id]) S.tracking[id]={xpLog:[],misc:0,ooa:false,serious:0,injuryNotes:[],meta:{type:"gang"}}; } else { S.mySelected=S.mySelected.filter(x=>x!==id);} updateMyTotals(); renderTracking(); save(); }); }); updateMyTotals(); }
+function updateMyTotals(){ const g=getMyGang(); if(!g){ document.getElementById("myCount").textContent=0; document.getElementById("myRating").textContent=0; return; } const by=idMap(g.fighters); const pick=S.mySelected.map(id=>by.get(id)).filter(Boolean); document.getElementById("myCount").textContent=pick.length; document.getElementById("myRating").textContent=sum(pick.map(f=>Number(f.rating||0))); }
+
+function renderDeckChecks(){ const wrap=document.getElementById("deckChecks"); wrap.innerHTML=S.tactics.decks.map(d=>{ const chk=S.deckIds.includes(d.id)?"checked":""; return `<label class="check"><input type="checkbox" data-deck="${d.id}" ${chk}> <div><strong>${esc(d.name)}</strong> <span class="muted">(${d.cards.length} cards)</span></div></label>`; }).join(""); wrap.querySelectorAll("[data-deck]").forEach(i=>{ i.addEventListener("change", e=>{ const id=e.target.getAttribute("data-deck"); if(e.target.checked){ if(!S.deckIds.includes(id)) S.deckIds.push(id); } else { S.deckIds=S.deckIds.filter(x=>x!==id);} renderTactics(); renderTacticsInBattle(); save(); }); }); }
+
+function renderTactics(){ const pool=poolCards(); const wrap=document.getElementById("tacTableWrap"); const selectedExtra=S.tacticIds.map(id=>({id,card:findCardAnywhere(id)})).filter(x=>x.card&&!pool.find(c=>c.id===x.id)).map(x=>({...x.card, deckId:"(unselected)", deckName:"Unselected Deck"})); const all=[...pool,...selectedExtra]; all.sort((a,b)=>a.name.localeCompare(b.name)); const rows=all.map(c=>{ const checked=S.tacticIds.includes(c.id)?"checked":""; const tag=c.deckName?` <span class="chip">${esc(c.deckName)}</span>`:""; const ghost=selectedExtra.find(x=>x.id===c.id)?` <span class="chip" title="Card kept from an unselected deck">kept</span>`:""; return `<tr><td><input type="checkbox" data-t="${c.id}" ${checked}></td><td>${esc(c.name)}${tag}${ghost}</td><td style="width:100px"><button class="btn" data-td="${c.id}">View</button></td></tr>`; }).join(""); wrap.innerHTML=`<table><thead><tr><th style="width:44px"></th><th>Card</th><th>Details</th></tr></thead><tbody>${rows||`<tr><td colspan="3" class="muted">No cards in pool. Select a deck above.</td></tr>`}</tbody></table>`; wrap.querySelectorAll("[data-t]").forEach(cb=>{ cb.addEventListener("change", e=>{ const id=e.target.getAttribute("data-t"); if(e.target.checked){ if(!S.tacticIds.includes(id)) S.tacticIds.push(id);} else { S.tacticIds=S.tacticIds.filter(x=>x!==id);} document.getElementById("tacCount").textContent=S.tacticIds.length; renderTacticsInBattle(); save(); }); }); wrap.querySelectorAll("[data-td]").forEach(btn=>{ btn.addEventListener("click", ()=>{ const id=btn.getAttribute("data-td"); const c=findCardAnywhere(id); openModal(c?.name||"Tactic", `<div class="muted">${esc(c?.text||"")}</div>`); }); }); document.getElementById("tacCount").textContent=S.tacticIds.length; }
+
+function renderTacticsInBattle(){
+  const panel = document.getElementById("tacticsInBattle");
+  const chips = document.getElementById("tacticsChips");
+  const cards = S.tacticIds.map(id=>findCardAnywhere(id)).filter(Boolean);
+  if(!cards.length){ panel.style.display = "none"; chips.innerHTML = ""; return; }
+  panel.style.display = "block";
+  chips.innerHTML = cards.map(c=>`<button class="chip tactic-chip" data-tid="${c.id}" title="Tap to view">${esc(c.name)}</button>`).join(" ");
+  chips.querySelectorAll('.tactic-chip').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-tid');
+      const c = findCardAnywhere(id);
+      openModal(c?.name || 'Tactic', `<div class="muted">${esc(c?.text || '')}</div>`);
+    });
+    btn.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); btn.click(); } });
+  });
+
+  panel.style.display = "block";
+  chips.innerHTML = cards.map(c=>`<span class="chip" title="${esc(c.text||"")}">${esc(c.name)}</span>`).join(" ");
+}
+
+function renderHirePools(){
+  const wrap = document.getElementById("hirePoolChecks");
+  wrap.innerHTML = S.hires.pools.map(p=>{
+    const chk = S.selectedHirePoolIds.includes(p.id) ? "checked" : "";
+    return `<label class="check"><input type="checkbox" data-hp="${p.id}" ${chk}> <div><strong>${esc(p.name)}</strong> <span class="muted">(${p.fighters.length} fighters)</span></div></label>`;
+  }).join("");
+  wrap.querySelectorAll("[data-hp]").forEach(i=>{
+    i.addEventListener("change", e=>{
+      const id = e.target.getAttribute("data-hp");
+      if(e.target.checked){ if(!S.selectedHirePoolIds.includes(id)) S.selectedHirePoolIds.push(id); }
+      else { S.selectedHirePoolIds = S.selectedHirePoolIds.filter(x=>x!==id); }
+      renderHireTable(); renderTracking(); save();
+    });
+  });
+}
+
+function renderHireTable(){
+  const wrap = document.getElementById("hireTableWrap");
+  const roster = hirePoolRoster();
+  const sel = new Set(S.selectedHireFighterIds);
+  const rows = roster.map(f=>{
+    const checked = sel.has(f.id) ? "checked" : "";
+    return `<tr>
+      <td><input type="checkbox" data-hf="${f.id}" ${checked}></td>
+      <td>${esc(f.name)} <span class="chip">${esc(f.role||"Hired")}</span> <span class="chip">${esc(f.poolName)}</span></td>
+      <td>${f.rating ?? 0}</td>
+    </tr>`;
+  }).join("");
+  wrap.innerHTML = `<table>
+    <thead><tr><th style="width:44px"></th><th>Fighter</th><th>Rating</th></tr></thead>
+    <tbody>${rows || `<tr><td colspan="3" class="muted">Enable a pool to show fighters.</td></tr>`}</tbody>
+  </table>`;
+  wrap.querySelectorAll("[data-hf]").forEach(cb=>{
+    cb.addEventListener("change", e=>{
+      const id = e.target.getAttribute("data-hf");
+      if(e.target.checked){ if(!S.selectedHireFighterIds.includes(id)) S.selectedHireFighterIds.push(id); if(!S.tracking[id]) S.tracking[id]={xpLog:[],misc:0,ooa:false,serious:0,injuryNotes:[],meta:{type:"hire", poolId:id.split(":")[0]}}; }
+      else { S.selectedHireFighterIds = S.selectedHireFighterIds.filter(x=>x!==id); }
+      updateHireTotals(); renderTracking(); save();
+    });
+  });
+  updateHireTotals();
+}
+
+function updateHireTotals(){
+  const roster = hirePoolRoster();
+  const by = new Map(roster.map(f=>[f.id,f]));
+  const pick = S.selectedHireFighterIds.map(id=>by.get(id)).filter(Boolean);
+  document.getElementById("hireCount").textContent = pick.length;
+  document.getElementById("hireRating").textContent = sum(pick.map(f=>Number(f.rating||0)));
+}
+
+/* Serious Injury options */
+const INJURIES = [
+  "Lession Learned","Impressive Scars","Horrid Scars","Bitter Enmity",
+  "Out Cold","Convalescence","Old Battle Wound","Partially Deafened",
+  "Humiliated","Eye Injury","Hand Injury","Hobbled",
+  "Spinal Injurt","Enfeebled","Head Injury", "Multiple Injuries", "Captured",
+  "Critical Injury", "Memorable Death"
+];
+
+function combinedRoster(){
+  const g = getMyGang();
+  const gangBy = g ? idMap(g.fighters) : new Map();
+  const gang = S.mySelected.map(id=>({ ...gangBy.get(id), id, type:"gang"})).filter(x=>x && x.name);
+  const hires = hirePoolRoster().filter(f=>S.selectedHireFighterIds.includes(f.id));
+  return [...gang, ...hires];
+}
+
+function renderTracking(){
+  renderTacticsInBattle();
+  const list=document.getElementById("trackList");
+  const roster = combinedRoster();
+  if(!roster.length){ list.innerHTML=""; return; }
+  list.innerHTML = roster.map(f=>{
+    const key=f.id; const tr=S.tracking[key] ||= {xpLog:[],misc:0,ooa:false,serious:0,injuryNotes:[],meta:{type:f.type, poolId:f.poolId}};
+    const xp = tr.xpLog.reduce((a,b)=>a+b.xp,0) + Number(tr.misc||0);
+    const injurySel = `<select data-injury style="width:100%">${INJURIES.map(i=>`<option value="${i}">${i}</option>`).join("")}</select>`;
+    const tag = f.type === "hire" ? `<span class="chip">Hire: ${esc(f.poolName||"Pool")}</span>` : `<span class="chip">Gang</span>`;
+    return `<div class="card" data-card="${key}">
+      <div class="row" style="justify-content:space-between">
+        <div><strong>${esc(f.name)}</strong> <span class="chip">${esc(f.role||"—")}</span> ${tag} <span class="chip">Rating ${f.rating??0}</span></div>
+        <div class="row"><span class="chip">XP: <strong>${xp}</strong></span><span class="chip">Serious Inj: <strong>${tr.serious||0}</strong></span><span class="chip">OoA: <strong>${tr.ooa?"Yes":"No"}</strong></span></div>
+      </div>
+      <div class="xp-grid" style="margin-top:8px">
+        <button class="btn" data-xp="SI">+1 Serious Injury Caused</button>
+        <button class="btn" data-xp="WRECK">+2 Vehicle Wrecked</button>
+        <button class="btn" data-xp="OOA">+2 Out of Action (select target)</button>
+        <button class="btn" data-xp="PART">+1 Took Part</button>
+        <button class="btn" data-xp="RALLY">+1 Rally</button>
+        <button class="btn" data-xp="ASSIST">+1 Assist Recovery</button>
+      </div>
+      <div class="row" style="margin-top:8px;align-items:center">
+        <label style="margin:0">Misc XP</label>
+        <input type="number" placeholder="0" min="0" value="${tr.misc||0}" data-misc style="width:120px">
+      </div>
+      <div class="row" style="margin-top:8px;align-items:flex-end">
+        <div style="flex:1;min-width:220px"><label>Record Serious Injury (on this fighter)</label>${injurySel}</div>
+        <button class="btn warn" data-add-injury>Add Injury</button>
+        <button class="btn warn" data-mark-ooa>Mark OoA</button>
+        <button class="btn danger" data-clear>Clear Fighter Log</button>
+      </div>
+      <div class="muted" style="margin-top:6px">Log:</div>
+      <ul style="margin:6px 0 0 18px" data-log>
+        ${tr.xpLog.map(ent=>`<li>${esc(ent.note)} <span class="muted">(+${ent.xp} XP)</span></li>`).join("")}
+        ${(tr.injuryNotes||[]).map(txt=>`<li>${esc(txt)}</li>`).join("")}
+      </ul>
+    </div>`;
+  }).join("");
+
+  // Bind per-card
+  list.querySelectorAll("[data-card]").forEach(card=>{
+    const key=card.getAttribute("data-card");
+    const tr=S.tracking[key] ||= {xpLog:[],misc:0,ooa:false,serious:0,injuryNotes:[],meta:{}};
+    function push(note,xp){ tr.xpLog.push({note,xp,ts:Date.now()}); save(); renderTracking(); }
+
+    card.querySelectorAll("[data-xp]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const type=btn.getAttribute("data-xp");
+        if(type==="SI") return push("Caused Serious Injury",1);
+        if(type==="WRECK") return push("Wrecked enemy vehicle",2);
+        if(type==="PART") return push("Took part (scenario allowed)",1);
+        if(type==="RALLY") return push("Broke and rallied",1);
+        if(type==="ASSIST") return push("Assisted Recovery test -> Pinned",1);
+        if(type==="OOA"){
+          const opps=oppFighters(); if(!opps.length){ return openModal("No Opponents",`<div class='muted'>Tick opponent gangs in Setup.</div>`); }
+          const opts=opps.map(o=>`<option value="${o.id}">${esc(o.name)} — ${esc(o.gangName)} (${esc(o.role||"?")})</option>`).join("");
+          openModal("Log Out of Action",`
+            <div class="muted" style="margin-bottom:6px">Select enemy fighter put OoA.</div>
+            <select id="ooaTarget" style="width:100%">${opts}</select>
+            <div class="row" style="margin-top:8px"><button class="btn primary" id="ooaConfirm">Add</button></div>
+          `,()=>{
+            document.getElementById("ooaConfirm").addEventListener("click",()=>{
+              const id=document.getElementById("ooaTarget").value; const tgt=opps.find(x=>x.id===id);
+              if(!tgt) return; const bonus=isLeadChamp(tgt.role)?1:0;
+              push(`Put ${tgt.name} (${tgt.role||"?"}, ${tgt.gangName}) Out of Action`,2+bonus);
+              closeModal();
+            });
+          });
+        }
+      });
+    });
+
+    // misc xp input
+    card.querySelector("input[data-misc]").addEventListener("change", e=>{ tr.misc=Number(e.target.value||0); save(); renderTracking(); });
+
+    // mark OoA on our fighter
+    card.querySelector("[data-mark-ooa]").addEventListener("click", ()=>{ tr.ooa=true; save(); renderTracking(); });
+
+    // add serious injury with select
+    card.querySelector("[data-add-injury]").addEventListener("click", ()=>{
+      const sel = card.querySelector('select[data-injury]');
+      const injury = sel ? sel.value : null;
+      tr.serious = Number(tr.serious||0)+1;
+      if(!tr.injuryNotes) tr.injuryNotes=[];
+      if(injury) tr.injuryNotes.push(`Sustained Injury: ${injury}`);
+      save(); renderTracking();
+    });
+
+    // clear
+    card.querySelector("[data-clear]").addEventListener("click", ()=>{
+      if(confirm("Clear this fighter's log?")) { S.tracking[key]={xpLog:[],misc:0,ooa:false,serious:0,injuryNotes:[],meta:tr.meta}; save(); renderTracking(); }
+    });
+  });
+}
+
+function generateReport(){
+  const g=getMyGang(); const scen=S.scenarios.find(s=>s.id===S.scenarioId);
+  const roster = combinedRoster();
+  const lines=[];
+  lines.push(`Scenario: ${scen?scen.name:"(none)"}` + (scen&&scen.text?`
+- ${scen.text}`:""));
+  lines.push("");
+  lines.push(`My Gang: ${g?g.name:"(none)"}`);
+  const totalRating=sum(roster.filter(r=>r.type==="gang").map(f=>Number(f.rating||0)));
+  const hireRating=sum(roster.filter(r=>r.type==="hire").map(f=>Number(f.rating||0)));
+  lines.push(`Selected Fighters (${roster.length}) | Gang Rating ${totalRating} | Hires Rating ${hireRating}`);
+  roster.forEach(f=>{
+    const tr=S.tracking[f.id]||{xpLog:[],misc:0,ooa:false,serious:0,injuryNotes:[]};
+    const xp=tr.xpLog.reduce((a,b)=>a+b.xp,0)+Number(tr.misc||0);
+    const tag=f.type==="hire"?` | Hire:${f.poolName||"Pool"}`:"";
+    lines.push(`- ${f.name} [${f.role||"—"} | ${f.rating??0}] -> XP ${xp}${tr.ooa?" | OUT OF ACTION":""}${tr.serious?` | Serious Injuries: ${tr.serious}`:""}${tag}`);
+    tr.xpLog.forEach(ent=>lines.push(`   • ${ent.note} (+${ent.xp})`));
+    if(tr.misc) lines.push(`   • Misc XP: +${tr.misc}`);
+    (tr.injuryNotes||[]).forEach(txt=>lines.push(`   • ${txt}`));
+  });
+  lines.push("");
+  const selCards=S.tacticIds.map(id=>findCardAnywhere(id)).filter(Boolean);
+  lines.push(`Tactics (${selCards.length}) (from decks: ${selectedDecks().map(d=>d.name).join(", ")||"—"})`);
+  selCards.forEach(c=>lines.push(`- ${c.name}`));
+  lines.push("");
+  lines.push("Opponent Gangs:");
+  S.oppGangIds.forEach(id=>{ const og=S.gangs.find(g=>g.id===id); if(og) lines.push(`- ${og.name}`); });
+  return lines.join("\n");
+}
+
+function resetStateToDefaults(){
+S.gangs = EMBED.gangs;
+S.tactics = EMBED.tactics;
+S.scenarios = EMBED.scenarios;
+S.hires = EMBED.hires;
+S.myGangId = EMBED.gangs[0]?.id || null;
+S.mySelected = [];
+S.oppGangIds = [];
+S.deckIds = EMBED.tactics.decks[0] ? [EMBED.tactics.decks[0].id] : [];
+S.tacticIds = [];
+S.scenarioId = EMBED.scenarios[0]?.id || null;
+S.selectedHirePoolIds = EMBED.hires.pools[0] ? [EMBED.hires.pools[0].id] : [];
+S.selectedHireFighterIds = [];
+S.tracking = {};
+}
+
+/* ====== UI wiring ====== */
+function renderAll(){ renderScenario(); renderGangs(); renderDeckChecks(); renderTactics(); renderHirePools(); renderHireTable(); renderTracking(); }
+
+function hardReset(){ localStorage.removeItem('necro_steel_v1'); resetStateToDefaults(); renderAll(); window.location = window.location.href}
+
+// tabs
+$$('.tab-btn').forEach(b=>b.addEventListener('click',()=>{ $$('.tab-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); const t=b.getAttribute('data-tab'); document.getElementById('setup').hidden = t!=="setup"; document.getElementById('tracking').hidden = t!=="tracking"; document.getElementById('report').hidden = t!=="report"; }));
+
+$('#resetBtn').addEventListener('click',()=>{ if(confirm('Reset everything to default and clear saved data?')) { hardReset(); alert('Reset complete.'); }});
+
+// scenario controls
+$('#scenarioSel').addEventListener('change',e=>{S.scenarioId=e.target.value; save();});
+$('#scenarioRnd').addEventListener('click',()=>{ if(S.scenarios.length){ S.scenarioId=randPick(S.scenarios,1)[0].id; renderScenario(); save(); }});
+$('#scenarioInfo').addEventListener('click',()=>{ const s=S.scenarios.find(x=>x.id===S.scenarioId); openModal(s?.name||'Scenario', `<div class="muted">${esc(s?.text||'')}</div>`); });
+
+// my gang selection
+$('#myGangSel').addEventListener('change',e=>{ S.myGangId=e.target.value; S.mySelected=[]; renderGangs(); renderTracking(); save(); });
+
+// random / clear fighters
+$('#rndMyBtn').addEventListener('click',()=>{ const g=getMyGang(); if(!g) return; const n=Math.max(1,Number($('#rndMyCount').value||1)); const pool=g.fighters.filter(f=>!S.mySelected.includes(f.id)); const picks=randPick(pool,n); picks.forEach(p=>{ if(!S.mySelected.includes(p.id)) S.mySelected.push(p.id); if(!S.tracking[p.id]) S.tracking[p.id]={xpLog:[],misc:0,ooa:false,serious:0,injuryNotes:[],meta:{type:'gang'}}; }); renderGangs(); renderTracking(); save(); });
+$('#clearMyBtn').addEventListener('click',()=>{ S.mySelected=[]; renderGangs(); renderTracking(); save(); });
+
+// tactics random/clear
+$('#rndTacBtn').addEventListener('click',()=>{ const n=Math.max(1,Number($('#rndTacCount').value||1)); const pool=poolCards().filter(c=>!S.tacticIds.includes(c.id)); const picks=randPick(pool,n); S.tacticIds.push(...picks.map(p=>p.id)); renderTactics(); renderTacticsInBattle(); save(); });
+$('#clearTacBtn').addEventListener('click',()=>{ S.tacticIds=[]; renderTactics(); renderTacticsInBattle(); save(); });
+
+// hires pools and fighters
+$('#rndHireBtn').addEventListener('click',()=>{ const n=Math.max(1,Number($('#rndHireCount').value||1)); const pool=hirePoolRoster().filter(f=>!S.selectedHireFighterIds.includes(f.id)); const picks=randPick(pool,n); picks.forEach(p=>{ if(!S.selectedHireFighterIds.includes(p.id)) S.selectedHireFighterIds.push(p.id); if(!S.tracking[p.id]) S.tracking[p.id]={xpLog:[],misc:0,ooa:false,serious:0,injuryNotes:[],meta:{type:'hire', poolId:p.poolId}}; }); renderHireTable(); renderTracking(); save(); });
+$('#clearHireBtn').addEventListener('click',()=>{ S.selectedHireFighterIds=[]; renderHireTable(); renderTracking(); save(); });
+
+// report
+$('#genBtn').addEventListener('click',()=>{ document.getElementById('reportOut').value = generateReport(); });
+$('#copyBtn').addEventListener('click', async()=>{ const txt=document.getElementById('reportOut').value||generateReport(); document.getElementById('reportOut').value=txt; try{await navigator.clipboard.writeText(txt); alert('Report copied.');}catch{alert('Copy failed; please copy manually.');} });
+
+// modal
+const backdrop=document.getElementById('backdrop');
+function openModal(title, html, bind){ document.getElementById('modalTitle').textContent=title||'Details'; document.getElementById('modalBody').innerHTML=html||''; backdrop.style.display='flex'; if(bind) setTimeout(bind,0); }
+function closeModal(){ backdrop.style.display='none'; }
+$('#closeModal').addEventListener('click', closeModal);
+backdrop.addEventListener('click', e=>{ if(e.target===backdrop) closeModal(); });
+
+// boot
+(function init(){ load(); renderAll(); })();
+</script>
+</body>
+</html>

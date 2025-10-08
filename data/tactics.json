@@ -1,0 +1,19 @@
+{
+  "decks": [
+    {
+      "id": "normal",
+      "name": "Normal Deck",
+      "cards": [
+        {"id":"t_overwatch","name":"Overwatch","text":"..."},
+        {"id":"t_medi","name":"Medi-skull","text":"..."}
+      ]
+    },
+    {
+      "id": "underdog",
+      "name": "Underdog Deck",
+      "cards": [
+        {"id":"t_rad","name":"Rad Pulse","text":"..."}
+      ]
+    }
+  ]
+}

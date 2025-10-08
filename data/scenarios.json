@@ -1,0 +1,4 @@
+[
+  {"id":"s_ambush","name":"Ambush","text":"Attacker sets an ambush. Defender starts scattered and exposed."},
+  {"id":"s_standoff","name":"Stand-off","text":"Even deployment. Last fighter standing. May award participation XP."}
+]

@@ -1,632 +1,1304 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Necromunda Battle Utility — Steel & Blood</title>
-<style>
-  /* ===== Dark Metallic Silver + Red (Mobile-first) ===== */
-  :root{
-    --bg:#0b0d12;           /* deep steel */
-    --panel:#14161a;        /* gunmetal panel */
-    --plate:#0f1218;        /* inner plate */
-    --text:#e6e8ed;         /* silver text */
-    --muted:#9aa3b2;        /* worn label */
-    --border:#252a33;       /* seams */
-    --edge:#3a4250;         /* bevel */
-    --accent:#dc2626;       /* blood red */
-    --accent2:#ef4444;      /* hot red */
-    --ok:#22c55e; --warn:#f59e0b; --danger:#ef4444; --chip:#0e1117;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial; color:var(--text);
-    background:
-      radial-gradient(1200px 800px at 20% -20%, rgba(220,38,38,.08), transparent),
-      radial-gradient(900px 700px at 110% 120%, rgba(239,68,68,.06), transparent),
-      repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 1px, transparent 1px 4px), /* brushed vertical */
-      repeating-linear-gradient(90deg, rgba(255,255,255,.02) 0 1px, transparent 1px 3px), /* brushed horizontal */
-      linear-gradient(180deg, #0b0d12, #0b0d12);
-  }
-  /* subtle metallic noise */
-  body::after{
-    content:""; position:fixed; inset:0; pointer-events:none; opacity:.055; mix-blend-mode:overlay;
-    background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3"/></filter><rect width="140" height="140" filter="url(%23n)" opacity="0.35" fill="none"/></svg>');
-  }
-
-  header{position:sticky;top:0;z-index:10;background:rgba(11,13,18,.92);backdrop-filter:blur(6px);border-bottom:2px solid var(--edge)}
-  .container{max-width:1180px;margin:0 auto;padding:12px}
-  h1{margin:0;font-size:18px;letter-spacing:.4px}
-  .brand{display:flex;gap:10px;align-items:center}
-  .badge{width:18px;height:18px;border-radius:4px;background:linear-gradient(135deg,#dc2626,transparent 60%), linear-gradient(180deg,#2c2f36,#101319); box-shadow:0 0 0 2px #2b3038,inset 0 2px 2px #000}
-  .tabs{display:flex;gap:8px;margin-top:8px;overflow:auto}
-  .tab-btn{border:1px solid var(--border);background:linear-gradient(180deg,var(--plate),#0b0d12);color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer;white-space:nowrap}
-  .tab-btn.active{background: var(--accent)}
-
-  main{padding:12px}
-  .grid{display:grid;gap:10px}
-  .g2{grid-template-columns:1fr}
-  @media (min-width: 820px){ .g2{grid-template-columns:repeat(2,minmax(0,1fr))} }
-
-  .panel{background:linear-gradient(180deg,var(--panel),#0e1015);border:1px solid var(--border);border-radius:12px;padding:12px;box-shadow:0 0 0 2px #000 inset, 0 6px 14px #0008}
-  .panel h2{margin:0 0 8px;font-size:17px}
-  label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
-  select,input[type="text"],input[type="number"]{width:100%;background:#0a0c10;border:1px solid var(--border);border-radius:10px;color:var(--text);padding:10px}
-  select::after:hover{width:100%;background:#0a0c10;border:1px solid var(--border);border-radius:10px;color:var(--text);padding:10px}
-  .btn{border:1px solid var(--border);background:linear-gradient(180deg,#1c2027,#0e1117);color:var(--text);padding:10px 12px;border-radius:10px;cursor:pointer;display:inline-flex;justify-content:center;align-items:center;line-height:1.1}
-  .btn:active{transform:translateY(1px)}
-  .btn:hover{filter:brightness(1.08)}
-  .primary{background:linear-gradient(180deg,var(--accent),#6b1b1b);border-color:#3d0d0d}
-  .ok{background:linear-gradient(180deg,#2fb168,#124a2b);border-color:#143621;color:#eaffef}
-  .warn{background:linear-gradient(180deg,#f59e0b,#8a5c05);border-color:#4a3002}
-  .danger{background:linear-gradient(180deg,#ef4444,#7a1414);border-color:#3a0a0a}
-  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .right{margin-left:auto}
-  table{width:100%;border-collapse:collapse;}
-  th,td{padding:10px;border-top:1px solid var(--border);text-align:left;vertical-align:top}
-  th{color:var(--muted);font-weight:600;border-bottom:1px solid var(--border)}
-  .chip{display:inline-flex;gap:6px;align-items:center;background:#0e1117;border:1px solid var(--border);border-radius:999px;padding:4px 8px;font-size:12px}
-  .muted{color:var(--muted);font-size:12px}
-  .card{border:1px solid var(--border);background:linear-gradient(180deg,var(--panel),#0e1015);border-radius:10px;padding:10px}
-  textarea{width:100%;min-height:260px;background:#0a0c10;border:1px solid var(--border);border-radius:10px;color:var(--text);padding:10px;white-space:pre}
-  .checklist{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
-  .check{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--border);background:#0a0c10;border-radius:10px;padding:10px}
-
-  td, th {
-    vertical-align: middle;
-  }
-
-  label.check div {padding-top: 15px}
-
-  /* Larger tap targets on mobile */
-  button, select, input { min-height: 42px; }
-
-  /* XP button grid for alignment */
-  .xp-grid{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
-  .xp-grid .btn{width:100%}
-
-  /* modal */
-  .backdrop{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;z-index:50}
-  .modal{width:min(760px,92vw);max-height:80vh;overflow:auto;background:linear-gradient(180deg,var(--panel),#0e1015);border:1px solid var(--border);border-radius:12px;padding:12px}
-  /* Clickable tactic chips */
-  button.chip{appearance:none;cursor:pointer}
-  .tactic-chip:hover,.tactic-chip:focus{outline:1px solid var(--accent)}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NECROMUNDA | STEEL TRACKER</title>
+  <style>
+    /* === RESET === */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    /* === NEO-BRUTALISM POST-APOCALYPTIC === */
+    :root {
+      --black: #0a0a0a;
+      --white: #fafaf5;
+      --red: #ff3838;
+      --orange: #ff8c38;
+      --yellow: #ffd438;
+      --green: #38ff88;
+      --cyan: #38d4ff;
+      --purple: #b838ff;
+      --gray: #666666;
+      --rust: #d94f2e;
+      --toxic: #c7ff00;
+      --steel: #8b9aa8;
+    }
+    
+    body {
+      font-family: 'Courier New', monospace;
+      background: var(--white);
+      color: var(--black);
+      line-height: 1.5;
+      padding-bottom: 60px;
+    }
+    
+    /* === HEADER === */
+    header {
+      background: var(--red);
+      border-bottom: 4px solid var(--black);
+      padding: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 0 var(--black);
+    }
+    
+    h1 {
+      font-size: 24px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    
+    /* === BUTTONS === */
+    button, .btn {
+      background: var(--yellow);
+      color: var(--black);
+      border: 4px solid var(--black);
+      padding: 10px 16px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 4px 4px 0 var(--black);
+      transition: transform 0.1s, box-shadow 0.1s;
+      white-space: nowrap;
+    }
+    
+    button:hover, .btn:hover {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 var(--black);
+    }
+    
+    button:active, .btn:active {
+      transform: translate(4px, 4px);
+      box-shadow: none;
+    }
+    
+    button.danger { background: var(--red); color: var(--white); }
+    button.success { background: var(--green); }
+    button.secondary { background: var(--steel); color: var(--white); }
+    button.toxic { background: var(--toxic); }
+    
+    /* === TABS === */
+    .tabs {
+      display: flex;
+      background: var(--orange);
+      border-bottom: 4px solid var(--black);
+      overflow-x: auto;
+    }
+    
+    .tab {
+      flex: 1;
+      min-width: 100px;
+      padding: 12px 8px;
+      background: var(--gray);
+      color: var(--white);
+      border: none;
+      border-right: 4px solid var(--black);
+      font-weight: 900;
+      box-shadow: none;
+    }
+    
+    .tab:last-child { border-right: none; }
+    .tab.active { background: var(--orange); color: var(--black); }
+    
+    /* === CONTENT === */
+    .content {
+      padding: 16px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .page { display: none; }
+    .page.active { display: block; }
+    
+    .section {
+      background: var(--cyan);
+      border: 4px solid var(--black);
+      padding: 16px;
+      margin-bottom: 20px;
+      box-shadow: 6px 6px 0 var(--black);
+      transform: rotate(-0.5deg);
+    }
+    
+    .section:nth-child(even) { transform: rotate(0.5deg); background: var(--yellow); }
+    .section:nth-child(3n) { background: var(--green); }
+    
+    h2 {
+      font-size: 20px;
+      font-weight: 900;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      text-decoration: underline;
+      text-decoration-thickness: 3px;
+    }
+    
+    /* === FORM ELEMENTS === */
+    select, input[type="number"], textarea {
+      width: 100%;
+      padding: 10px;
+      border: 4px solid var(--black);
+      background: var(--white);
+      font-family: inherit;
+      font-size: 14px;
+      margin-bottom: 8px;
+      box-shadow: 3px 3px 0 var(--black);
+    }
+    
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+    
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(0,0,0,0.05);
+      border: 3px solid var(--black);
+      margin: 8px 0;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+    
+    .checkbox-label:hover {
+      background: rgba(0,0,0,0.1);
+      transform: translate(1px, 1px);
+    }
+    
+    .checkbox-label input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    
+    /* === TABLE === */
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 4px solid var(--black);
+      background: var(--white);
+      margin: 12px 0;
+      box-shadow: 6px 6px 0 var(--black);
+      overflow-x: auto;
+      display: block;
+    }
+    
+    table thead, table tbody, table tr {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+    }
+    
+    th {
+      background: var(--black);
+      color: var(--yellow);
+      padding: 10px;
+      text-align: left;
+      border-bottom: 4px solid var(--black);
+      font-weight: 900;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+    
+    td {
+      padding: 10px;
+      border-bottom: 3px solid var(--black);
+      font-size: 13px;
+      word-wrap: break-word;
+    }
+    
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: var(--yellow); }
+    
+    /* === CHIP === */
+    .chip {
+      background: var(--purple);
+      color: var(--white);
+      padding: 6px 12px;
+      border: 3px solid var(--black);
+      font-weight: 700;
+      font-size: 12px;
+      box-shadow: 3px 3px 0 var(--black);
+      text-transform: uppercase;
+      display: inline-block;
+      margin: 4px;
+    }
+    
+    /* === FIGHTER CARD === */
+    .fighter-card {
+      background: var(--white);
+      border: 4px solid var(--black);
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 10px 10px 0 var(--black);
+      transform: rotate(-1deg);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .fighter-card:nth-child(even) { transform: rotate(1deg); }
+    .fighter-card.ooa { background: var(--rust); color: var(--white); }
+    .fighter-card.collapsed { padding: 12px 16px; }
+    .fighter-card:hover { transform: rotate(0deg) scale(1.01); }
+    
+    /* === LOG === */
+    .log {
+      background: var(--white);
+      border: 4px solid var(--black);
+      padding: 12px;
+      margin: 12px 0;
+      max-height: 200px;
+      overflow-y: auto;
+      font-size: 12px;
+      box-shadow: 3px 3px 0 var(--black);
+    }
+    
+    .log-entry {
+      padding: 4px 0;
+      border-bottom: 2px dashed var(--gray);
+    }
+    
+    /* === MODAL === */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 1000;
+      padding: 20px;
+      overflow-y: auto;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal.active { display: flex; }
+    
+    .modal-content {
+      background: var(--cyan);
+      border: 4px solid var(--black);
+      padding: 24px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 10px 10px 0 var(--black);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      border-bottom: 3px solid var(--black);
+      padding-bottom: 12px;
+    }
+    
+    .modal-header h2 {
+      font-size: 20px;
+      font-weight: 900;
+      text-transform: uppercase;
+      margin: 0;
+    }
+    
+    /* === TACTICS PANEL === */
+    .tactics-panel {
+      background: var(--purple);
+      border: 4px solid var(--black);
+      padding: 12px;
+      margin-bottom: 20px;
+      box-shadow: 6px 6px 0 var(--black);
+    }
+    
+    .tactics-panel h3 {
+      color: var(--yellow);
+      margin-bottom: 8px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+    
+    /* === GRID === */
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 8px;
+      margin: 12px 0;
+    }
+    
+    .button-grid button {
+      font-size: 11px;
+      padding: 8px;
+    }
+    
+    /* === MOBILE === */
+    @media (max-width: 640px) {
+      button, .btn {
+        font-size: 12px;
+        padding: 8px 12px;
+      }
+      
+      th, td {
+        padding: 6px;
+        font-size: 11px;
+      }
+      
+      .fighter-card {
+        transform: rotate(0deg) !important;
+      }
+      
+      .section {
+        transform: rotate(0deg) !important;
+      }
+      
+      h1 {
+        font-size: 20px;
+      }
+      
+      h2 {
+        font-size: 18px;
+      }
+    }
+  </style>
 </head>
 <body>
-<header>
-  <div class="container">
-    <div class="row">
-    <div class="brand"><div class="badge"></div><h1>Necromunda Utility</h1></div>
-      <div class="right row">
-        <button class="btn danger" id="resetBtn" title="Clear saved data and restore defaults">Reset</button>
-      </div>
+  <!-- HEADER -->
+  <header>
+    <h1>⚡ NECROMUNDA STEEL TRACKER ⚡</h1>
+    <div class="header-actions">
+      <button onclick="app.save()">💾 SAVE</button>
+      <button class="success" onclick="app.load()">📂 LOAD</button>
+      <button class="danger" onclick="app.reset()">🔥 RESET</button>
     </div>
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="setup">Setup</button>
-      <button class="tab-btn" data-tab="tracking">Battle Tracking</button>
-      <button class="tab-btn" data-tab="report">Battle Report</button>
+  </header>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="app.switchTab('setup')">SETUP</button>
+    <button class="tab" onclick="app.switchTab('battle')">BATTLE</button>
+    <button class="tab" onclick="app.switchTab('report')">REPORT</button>
+    <button class="tab" onclick="app.switchTab('cheat')">CHEAT SHEET</button>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+    <!-- SETUP PAGE -->
+    <div id="setup-page" class="page active"></div>
+    
+    <!-- BATTLE PAGE -->
+    <div id="battle-page" class="page"></div>
+    
+    <!-- REPORT PAGE -->
+    <div id="report-page" class="page"></div>
+    
+    <!-- CHEAT SHEET PAGE -->
+    <div id="cheat-page" class="page"></div>
+  </div>
+
+  <!-- MODAL -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-title"></h2>
+        <button onclick="app.closeModal()" style="padding: 4px 12px; font-size: 20px;">✖</button>
+      </div>
+      <div id="modal-body"></div>
     </div>
   </div>
-</header>
 
-<main class="container">
-  <!-- ===== SETUP ===== -->
-  <section id="setup">
-    <div class="grid g2">
-      <div class="panel">
-        <h2>Scenario</h2>
-        <div class="row">
-          <select id="scenarioSel" style="flex:1"></select>
-          <button class="btn" id="scenarioRnd">Random</button>
-          <button class="btn" id="scenarioInfo">Details</button>
-        </div>
-      </div>
+  <script>
+    const DATA = {
+      gangs: [
+        {
+          id: "goliath",
+          name: "Goliath",
+          fighters: [
+            {id:"g_lead",name:"Goliath Leader",role:"Leader",rating:150},
+            {id:"g_champ1",name:"Goliath Champion",role:"Champion",rating:110},
+            {id:"g_champ2",name:"Stimmer",role:"Champion",rating:115},
+            {id:"g_ganger1",name:"Goliath Ganger",role:"Ganger",rating:60},
+            {id:"g_ganger2",name:"Goliath Ganger",role:"Ganger",rating:60},
+            {id:"g_juve",name:"Goliath Juve",role:"Juve",rating:35}
+          ]
+        },
+        {
+          id: "escher",
+          name: "Escher",
+          fighters: [
+            {id:"e_lead",name:"Escher Queen",role:"Leader",rating:145},
+            {id:"e_champ1",name:"Escher Champion",role:"Champion",rating:105},
+            {id:"e_champ2",name:"Death-Maiden",role:"Champion",rating:120},
+            {id:"e_ganger1",name:"Escher Ganger",role:"Ganger",rating:55},
+            {id:"e_ganger2",name:"Escher Ganger",role:"Ganger",rating:55},
+            {id:"e_juve",name:"Little Sister",role:"Juve",rating:30}
+          ]
+        },
+        {
+          id: "orlock",
+          name: "Orlock",
+          fighters: [
+            {id:"o_lead",name:"Road Boss",role:"Leader",rating:140},
+            {id:"o_champ1",name:"Road Sergeant",role:"Champion",rating:100},
+            {id:"o_champ2",name:"Arms Master",role:"Champion",rating:105},
+            {id:"o_ganger1",name:"Gunner",role:"Ganger",rating:65},
+            {id:"o_ganger2",name:"Orlock Ganger",role:"Ganger",rating:55},
+            {id:"o_juve",name:"Greenhorn",role:"Juve",rating:30}
+          ]
+        },
+        {
+          id: "van_saar",
+          name: "Van Saar",
+          fighters: [
+            {id:"v_lead",name:"Van Saar Prime",role:"Leader",rating:155},
+            {id:"v_champ1",name:"Augmek",role:"Champion",rating:115},
+            {id:"v_champ2",name:"Archeotek",role:"Champion",rating:120},
+            {id:"v_ganger1",name:"Van Saar Tek",role:"Ganger",rating:70},
+            {id:"v_ganger2",name:"Van Saar Ganger",role:"Ganger",rating:60},
+            {id:"v_juve",name:"Van Saar Juve",role:"Juve",rating:35}
+          ]
+        },
+        {
+          id: "cawdor",
+          name: "Cawdor",
+          fighters: [
+            {id:"c_lead",name:"Word-Keeper",role:"Leader",rating:135},
+            {id:"c_champ1",name:"Cawdor Champion",role:"Champion",rating:95},
+            {id:"c_champ2",name:"Sheen Bird",role:"Champion",rating:100},
+            {id:"c_ganger1",name:"Cawdor Ganger",role:"Ganger",rating:50},
+            {id:"c_ganger2",name:"Bonepicker",role:"Ganger",rating:45},
+            {id:"c_juve",name:"Cawdor Juve",role:"Juve",rating:25}
+          ]
+        },
+        {
+          id: "delaque",
+          name: "Delaque",
+          fighters: [
+            {id:"d_lead",name:"Master of Shadow",role:"Leader",rating:150},
+            {id:"d_champ1",name:"Phantom",role:"Champion",rating:110},
+            {id:"d_champ2",name:"Nacht-Ghul",role:"Champion",rating:115},
+            {id:"d_ganger1",name:"Shadow",role:"Ganger",rating:60},
+            {id:"d_ganger2",name:"Delaque Ganger",role:"Ganger",rating:55},
+            {id:"d_juve",name:"Ghost",role:"Juve",rating:30}
+          ]
+        }
+      ],
+      tactics: {
+        decks: [
+          {
+            id: "normal",
+            name: "Normal Deck",
+            cards: [
+              {id:"t_overwatch",name:"Overwatch",text:"Reaction. When an enemy fighter moves within LoS, interrupt and make a ranged attack at -1 to hit."},
+              {id:"t_ambush",name:"Ambush",text:"Play at start of round. One fighter can make a free Shoot action before Priority roll."},
+              {id:"t_evade",name:"Evade",text:"Reaction. When targeted by ranged attack, roll Initiative. Success: attacker suffers -1 to hit."},
+              {id:"t_medicae",name:"Medicae",text:"Action. Remove a Flesh Wound from a friendly fighter within 3\"."},
+              {id:"t_smoke",name:"Smoke Grenades",text:"Action. Place 5\" smoke template within 6\". Blocks LoS until End Phase."},
+              {id:"t_retreat",name:"Tactical Withdrawal",text:"Reaction. When bottled, one fighter may make free Move action toward table edge."}
+            ]
+          },
+          {
+            id: "underdog",
+            name: "Underdog Deck",
+            cards: [
+              {id:"t_scavenge",name:"Scavenge",text:"Start of battle. Gain D3 random equipment items from common list."},
+              {id:"t_rad",name:"Rad Pulse",text:"Action. Place 3\" blast within 12\". All fighters take S3 hit ignoring armor."},
+              {id:"t_desperate",name:"Desperate Measures",text:"Play when making injury roll. Add +1 to the roll."},
+              {id:"t_booby",name:"Booby Trap",text:"Deploy phase. Place marker in terrain. First enemy within 2\" takes S4 D2 hit."}
+            ]
+          },
+          {
+            id: "dominance",
+            name: "Dominance Deck",
+            cards: [
+              {id:"t_suppression",name:"Suppression Fire",text:"Action. Pin D3 enemy fighters within 18\" and LoS."},
+              {id:"t_coordinate",name:"Coordinated Strike",text:"Play before activation. Up to 3 friendly fighters can activate together."},
+              {id:"t_ruthless",name:"Ruthless Efficiency",text:"Play when taking fighter OoA. Gain +1 Rep for scenario."}
+            ]
+          }
+        ]
+      },
+      scenarios: [
+        {id:"s_standoff",name:"Stand-off",text:"Standard battle. Control objectives. Winner: most fighters within 6\" of center at end."},
+        {id:"s_ambush",name:"Ambush",text:"Defender deploys first. Attacker enters from random edge. Kill/rout enemy to win."},
+        {id:"s_skirmish",name:"Skirmish",text:"Random deployment. First blood scenario. First gang to take 3 enemies OoA wins."},
+        {id:"s_salvage",name:"Salvage Operation",text:"5 loot markers. Carry off table edge. Gang with most loot wins."},
+        {id:"s_sabotage",name:"Sabotage",text:"Attacker must destroy 3 objectives in enemy territory. Defender prevents."},
+        {id:"s_tunnel",name:"Tunnel Skirmish",text:"Tight corridors. No long range. Close combat favored. Bottle test at 50%."}
+      ],
+      hires: {
+        pools: [
+          {
+            id: "bounty",
+            name: "Bounty Hunters",
+            fighters: [
+              {id:"bh_kara",name:"Kara Nine-Fingers",role:"Bounty Hunter",rating:160},
+              {id:"bh_slate",name:"Slate Merdena",role:"Bounty Hunter",rating:155},
+              {id:"bh_yar",name:"Yar Umbra",role:"Bounty Hunter",rating:165}
+            ]
+          },
+          {
+            id: "hired",
+            name: "Hired Guns",
+            fighters: [
+              {id:"hg_rogue",name:"Rogue Doc",role:"Hired Gun",rating:90},
+              {id:"hg_dome",name:"Dome Runner",role:"Hired Gun",rating:85},
+              {id:"hg_hive",name:"Hive Scum",role:"Hired Gun",rating:70}
+            ]
+          },
+          {
+            id: "hangers",
+            name: "Hangers-on",
+            fighters: [
+              {id:"ho_ammo",name:"Ammo-Jack",role:"Hanger-on",rating:40},
+              {id:"ho_sloppo",name:"Slopper",role:"Hanger-on",rating:35}
+            ]
+          }
+        ]
+      },
+      injuries: [
+        "Flesh Wound",
+        "Concussion",
+        "Grievous Injury",
+        "Critical Injury",
+        "Old Battle Wound",
+        "Hobbled",
+        "Enfeebled",
+        "Partially Deafened",
+        "Hand Injury",
+        "Head Injury",
+        "Eye Injury",
+        "Chest Wound",
+        "Spinal Injury",
+        "Leg Injury",
+        "Arm Injury"
+      ]
+    };
 
-      <div class="panel" style="grid-column:1/-1">
-        <h2>My Gang & Opponents</h2>
-        <div class="grid g2">
-          <div>
-            <label>My Gang</label>
-            <select id="myGangSel"></select>
-            <div class="row" style="margin-top:6px">
-              <input id="rndMyCount" type="number" min="1" value="1" style="width:110px">
-              <button class="btn" id="rndMyBtn">Add Random</button>
-              <button class="btn warn" id="clearMyBtn">Clear</button>
-              <span class="chip">Selected: <span id="myCount">0</span></span>
-              <span class="chip">Total Rating: <span id="myRating">0</span></span>
-            </div>
-          </div>
-          <div>
-            <label>Opponent Gangs (checkboxes)</label>
-            <div id="oppChecks" class="checklist"></div>
-          </div>
-        </div>
-        <div id="myTableWrap" style="margin-top:10px"></div>
-      </div>
+    const app = {
+      state: {
+        myGangId: null,
+        mySelected: [],
+        oppGangIds: [],
+        deckIds: ["normal"],
+        tacticIds: [],
+        scenarioId: null,
+        selectedHirePoolIds: [],
+        selectedHireFighterIds: [],
+        tracking: {},
+        expandedCards: {}
+      },
 
-      <div class="panel" style="grid-column:1/-1">
-        <h2>Tactic Decks & Pool</h2>
-        <div class="muted" style="margin-bottom:6px">Select any number of decks (e.g., Normal + Underdog). Selected cards persist even if you deselect a deck later.</div>
-        <div id="deckChecks" class="checklist" style="margin-bottom:8px"></div>
-        <div class="row" style="margin-bottom:8px">
-          <input id="rndTacCount" type="number" min="1" value="1" style="width:110px">
-          <button class="btn" id="rndTacBtn">Add Random From Pool</button>
-          <button class="btn warn" id="clearTacBtn">Clear Selected</button>
-          <span class="chip">Selected: <span id="tacCount">0</span></span>
-        </div>
-        <div id="tacTableWrap"></div>
-      </div>
+      init() {
+        this.load();
+        this.render();
+      },
 
-      <div class="panel" style="grid-column:1/-1">
-        <h2>Bounty Hunters & Hired Guns</h2>
-        <div class="muted" style="margin-bottom:6px">Enable pools and pick fighters to add to your roster for this battle.</div>
-        <div id="hirePoolChecks" class="checklist" style="margin-bottom:8px"></div>
-        <div class="row" style="margin-bottom:8px">
-          <input id="rndHireCount" type="number" min="1" value="1" style="width:110px">
-          <button class="btn" id="rndHireBtn">Add Random From Enabled Pools</button>
-          <button class="btn warn" id="clearHireBtn">Clear Hires</button>
-          <span class="chip">Hires Selected: <span id="hireCount">0</span></span>
-          <span class="chip">Hires Rating: <span id="hireRating">0</span></span>
-        </div>
-        <div id="hireTableWrap"></div>
-      </div>
-    </div>
-  </section>
+      save() {
+        localStorage.setItem('necro_steel_v1', JSON.stringify(this.state));
+        alert('Saved!');
+      },
 
-  <!-- ===== TRACKING ===== -->
-  <section id="tracking" hidden>
-    <div class="panel"><h2>Battle Tracking</h2>
-      <div class="muted">Log XP per fighter. OoA modal lists enemies based on opponent checkboxes.</div>
-    </div>
-    <div class="panel" id="tacticsInBattle" style="display:none">
-      <h2>Tactics In Play</h2>
-      <div id="tacticsChips" class="row"></div>
-    </div>
-    <div id="trackList" class="grid g2"></div>
+      load() {
+        const saved = localStorage.getItem('necro_steel_v1');
+        if (saved) {
+          try {
+            this.state = JSON.parse(saved);
+            this.render();
+            alert('Loaded!');
+          } catch (e) {
+            console.error('Failed to load', e);
+          }
+        }
+      },
 
-    <!-- Lasting Injury Table (D66) -->
-    <div class="panel" id="lastingPanel">
-      <h2>Lasting Injury (D66)</h2>
-      <table>
-        <thead><tr><th style="width:90px">D66</th><th>Lasting Injury</th></tr></thead>
-        <tbody>
-          <tr><td>11</td><td><strong>Lesson Learned:</strong> The fighter goes into Convalescence but gains D3 Experience.</td></tr>
-          <tr><td>12</td><td><strong>Impressive Scars:</strong> The fighter gains a set of impressive scars as testament to their bravery. Increase the fighter's Cool by 1. This bonus only applies once, treat all further results as Out Cold.</td></tr>
-          <tr><td>13</td><td><strong>Horrid Scars:</strong> The fighter has been horrifically disfigured, leaving them with a fearsome visage. The fighter gains the Fearsome skill. If they already have the Fearsome skill, treat this result as Out Cold.</td></tr>
-          <tr><td>14</td><td><strong>Bitter Enmity:</strong> The fighter bears a bitter grudge against the gang that inflicted this injury. When fighting a battle against the gang that inflicted this injury, the fighter gains the Berserker skill. If they already have the Berserker skill or roll this result a second time, treat it as Out Cold.</td></tr>
-          <tr><td>15–26</td><td><strong>Out Cold:</strong> The fighter misses the rest of the battle, but avoids any long term injuries. The fighter recovers in time to perform post-battle actions.</td></tr>
-          <tr><td>31–36</td><td><strong>Convalescence:</strong> The fighter goes into Convalescence.</td></tr>
-          <tr><td>41</td><td><strong>Old Battle Wound:</strong> At the end of each battle this fighter participates in roll a D6, on a 1 the fighter goes into Convalescence.</td></tr>
-          <tr><td>42</td><td><strong>Partially Deafened:</strong> The fighter suffers no penalty if they are partially deafened, however, suffering this injury again reduces their Leadership by 1.</td></tr>
-          <tr><td>43</td><td><strong>Humiliated:</strong> The fighter goes into Convalescence and their Leadership and Cool characteristics are each decreased by 1.</td></tr>
-          <tr><td>44</td><td><strong>Eye Injury:</strong> The fighter goes into Recovery and their Ballistic Skill characteristic is decreased by 1.</td></tr>
-          <tr><td>45</td><td><strong>Hand Injury:</strong> The fighter goes into Recovery and their Weapon Skill characteristic is decreased by 1.</td></tr>
-          <tr><td>46</td><td><strong>Hobbled:</strong> The fighter goes into Recovery and their Movement characteristic is decreased by 1.</td></tr>
-          <tr><td>51</td><td><strong>Spinal Injury:</strong> The fighter goes into Recovery and their Strength characteristic is decreased by 1.</td></tr>
-          <tr><td>52</td><td><strong>Enfeebled:</strong> The fighter goes into Recovery and their Toughness characteristic is decreased by 1.</td></tr>
-          <tr><td>53</td><td><strong>Head Injury:</strong> The fighter goes into Recovery and their Intelligence and Willpower characteristics are each decreased by 1.</td></tr>
-          <tr><td>54</td><td><strong>Multiple Injuries:</strong> The fighter is not dead but has suffered many serious wounds. Roll a further D3 times on this table re-rolling any results of Captured, Multiple Injuries, Memorable Death, Critical Injury or Out Cold.</td></tr>
-          <tr><td>55–56</td><td><strong>Captured:</strong> The fighter might be Captured.</td></tr>
-          <tr><td>61–65</td><td><strong>Critical Injury:</strong> The fighter is in a critical condition – if their injuries are not successfully treated by a visit to the Doc (see Medical Escort) in the post-battle sequence, they will die.</td></tr>
-          <tr><td>66</td><td><strong>Memorable Death:</strong> The fighter is killed instantly – not even the most talented Doc can save them. If the injury was caused by an Attack action, the attacker gains 1 additional XP.</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
+      reset() {
+        if (!confirm('Reset all data? This cannot be undone!')) return;
+        localStorage.removeItem('necro_steel_v1');
+        this.state = {
+          myGangId: null,
+          mySelected: [],
+          oppGangIds: [],
+          deckIds: ["normal"],
+          tacticIds: [],
+          scenarioId: null,
+          selectedHirePoolIds: [],
+          selectedHireFighterIds: [],
+          tracking: {},
+          expandedCards: {}
+        };
+        this.render();
+      },
 
-  <!-- ===== REPORT ===== -->
-  <section id="report" hidden>
-    <div class="panel">
-      <h2>Battle Report</h2>
-      <div class="row">
-        <button class="btn primary" id="genBtn">Generate</button>
-        <button class="btn ok" id="copyBtn">Copy</button>
-        <span class="chip">Plain text suitable for campaign logs</span>
-      </div>
-      <textarea id="reportOut" placeholder="Report appears here..."></textarea>
-    </div>
-  </section>
-</main>
+      switchTab(tab) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        
+        event.target.classList.add('active');
+        document.getElementById(`${tab}-page`).classList.add('active');
+        
+        this.render();
+      },
 
-<!-- Modal -->
-<div class="backdrop" id="backdrop">
-  <div class="modal">
-    <div class="row" style="justify-content:space-between">
-      <h3 id="modalTitle">Details</h3>
-      <button class="btn" id="closeModal">Close</button>
-    </div>
-    <div id="modalBody" style="margin-top:6px"></div>
-  </div>
-</div>
+      openModal(title, body) {
+        document.getElementById('modal-title').textContent = title;
+        document.getElementById('modal-body').innerHTML = decodeURIComponent(body);
+        document.getElementById('modal').classList.add('active');
+      },
 
-<script>
-/* ====== Embedded fallback ====== */
-const EMBED = {
-  gangs: [
-    { id:"cot", name:"Carnival Of Terror", fighters:[
-      {id:"cot_lead", name:"Ring Master", role:"Leader", rating:260},
-      {id:"cot_g1", name:"Jester", role:"Ganger", rating:90},
-      {id:"cot_ch1", name:"Fire Performer", role:"Champion", rating:245},
-      {id:"cot_ch2", name:"The Strong Man", role:"Champion", rating:175},
-      {id:"cot_g2", name:"Harlequin", role:"Ganger", rating:95},
-      {id:"cot_g3", name:"The Magician", role:"Ganger", rating:80},
-      {id:"cot_b1", name:"The Freak", role:"Brute", rating:210},
-      {id:"cot_g4", name:"Ricco Nasty", role:"Ganger", rating:80}
-    ]},
-    { id:"orlock", name:"Orlock (Chummers)", fighters:[
-      {id:"ol_lead", name:"Dherik", role:"Leader", rating:195},
-      {id:"ol_ch1", name:"Rivet", role:"Champion", rating:150},
-      {id:"ol_g1", name:"Crank", role:"Ganger", rating:90},
-      {id:"ol_g2", name:"Piston", role:"Ganger", rating:88},
-      {id:"ol_j1", name:"Spark", role:"Juve", rating:55}
-    ]}
-  ],
-  tactics: {
-    decks: [
-      { id:"normal", name:"John's Deck", cards:[
-        {id:"j_click", name:"...Click", text:`Play this gang tactic after an enemy model has completed a Shoot (Basic) action after fully resolving any hits.
-The weapon that was used to make the Shoot (Basic) action immediately runs Out of Ammo as if it had failed an Ammo test.`},
-        {id:"t_medi", name:"Medi-skull", text:"Reroll a single Recovery test within 3\" of the bearer."}
-      ]},
-      { id:"underdog", name:"Underdog Deck", cards:[
-        {id:"t_rad", name:"Test 1", text:"Start of round: choose a point; fighters within 3\" test T or take a Flesh Wound."},
-        {id:"t_scrap", name:"Test 2", text:"Gain D3 creds worth of disposable ammo for this round."}
-      ]}
-    ]
-  },
-  scenarios: [
-    {id:"s_ambush", name:"Ambush", text:"Attacker sets an ambush; defender starts scattered and exposed."},
-    {id:"s_standoff", name:"Stand-off", text:"Even deployment. Last fighter standing. May award participation XP."}
-  ],
-  hires: {
-    pools: [
-      { id:"bounty", name:"Bounty Hunters", fighters:[
-        {id:"bh_kara", name:"Kara Nine-Fingers", role:"Bounty Hunter", rating:160},
-        {id:"bh_razor", name:"Razor Zed", role:"Bounty Hunter", rating:150}
-      ]},
-      { id:"hired", name:"Hired Guns", fighters:[
-        {id:"hg_slate", name:"Slate Jackal", role:"Hired Gun", rating:110},
-        {id:"hg_mags", name:"Mags", role:"Hired Gun", rating:95}
-      ]}
-    ]
-  }
-};
+      closeModal() {
+        document.getElementById('modal').classList.remove('active');
+      },
 
-/* ====== State ====== */
-const S = {
-  gangs: EMBED.gangs,
-  tactics: EMBED.tactics,
-  scenarios: EMBED.scenarios,
-  hires: EMBED.hires,
-  myGangId: EMBED.gangs[0]?.id || null,
-  mySelected: [],
-  oppGangIds: [],
-  deckIds: EMBED.tactics.decks[0] ? [EMBED.tactics.decks[0].id] : [],
-  tacticIds: [],
-  scenarioId: EMBED.scenarios[0]?.id || null,
-  selectedHirePoolIds: EMBED.hires.pools[0] ? [EMBED.hires.pools[0].id] : [],
-  selectedHireFighterIds: [],
-  tracking:{} // key -> { xpLog:[{note,xp,ts}], misc:0, ooa:false, serious:0, injuryNotes:[], meta:{type:"gang"|"hire", poolId?} }
-};
+      toggleFighter(id) {
+        if (this.state.mySelected.includes(id)) {
+          this.state.mySelected = this.state.mySelected.filter(x => x !== id);
+        } else {
+          this.state.mySelected.push(id);
+        }
+        this.render();
+      },
 
-const $ = s => document.querySelector(s);
-const $$ = s => Array.from(document.querySelectorAll(s));
-const idMap = arr => {const m=new Map();arr.forEach(x=>m.set(x.id,x));return m;};
-const sum = a => a.reduce((x,y)=>x+y,0);
-const randPick = (arr,n)=>{const a=[...arr];const out=[];while(a.length&&out.length<n){out.push(a.splice(Math.floor(Math.random()*a.length),1)[0]);}return out;};
-const isLeadChamp = r => /^(Leader|Champion)$/i.test(r||"");
-const esc = s => (s??"").toString().replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+      addRandomFighters() {
+        const gang = DATA.gangs.find(g => g.id === this.state.myGangId);
+        if (!gang) return;
+        const n = parseInt(prompt('How many random fighters?', '3')) || 3;
+        const available = gang.fighters.filter(f => !this.state.mySelected.includes(f.id));
+        for (let i = 0; i < n && available.length > 0; i++) {
+          const idx = Math.floor(Math.random() * available.length);
+          this.state.mySelected.push(available[idx].id);
+          available.splice(idx, 1);
+        }
+        this.render();
+      },
 
-/* ====== Storage ====== */
-function save(){ localStorage.setItem("necro_steel_v1", JSON.stringify(S)); }
-function load(){ const raw=localStorage.getItem("necro_steel_v1"); if(!raw) return false; try{Object.assign(S,JSON.parse(raw));return true;}catch{return false;} }
+      toggleOpponent(id) {
+        if (this.state.oppGangIds.includes(id)) {
+          this.state.oppGangIds = this.state.oppGangIds.filter(x => x !== id);
+        } else {
+          this.state.oppGangIds.push(id);
+        }
+        this.render();
+      },
 
-/* ====== Helpers ====== */
-function getMyGang(){ return S.gangs.find(g=>g.id===S.myGangId); }
-function selectedDecks(){ return S.tactics.decks.filter(d=>S.deckIds.includes(d.id)); }
-function poolCards(){ const seen=new Map(); selectedDecks().forEach(d=>d.cards.forEach(c=>{ if(!seen.has(c.id)) seen.set(c.id,{...c, deckId:d.id, deckName:d.name}); })); return Array.from(seen.values()); }
-function oppFighters(){ const out=[]; S.gangs.filter(g=>S.oppGangIds.includes(g.id)).forEach(g=>{ g.fighters.forEach(f=>out.push({...f, gangId:g.id, gangName:g.name})); }); return out; }
-function findCardAnywhere(id){ for(const d of S.tactics.decks){ const c=d.cards.find(x=>x.id===id); if(c) return {...c, deckId:d.id, deckName:d.name}; } return null; }
+      toggleDeck(id) {
+        if (this.state.deckIds.includes(id)) {
+          this.state.deckIds = this.state.deckIds.filter(x => x !== id);
+        } else {
+          this.state.deckIds.push(id);
+        }
+        this.render();
+      },
 
-function selectedHirePools(){ return S.hires.pools.filter(p=>S.selectedHirePoolIds.includes(p.id)); }
-function hirePoolRoster(){
-  const out=[];
-  selectedHirePools().forEach(p=>{
-    p.fighters.forEach(f=>{
-      out.push({ ...f, id: `${p.id}:${f.id}`, origId:f.id, poolId:p.id, poolName:p.name, type:"hire" });
-    });
-  });
-  return out;
-}
+      toggleTactic(id) {
+        if (this.state.tacticIds.includes(id)) {
+          this.state.tacticIds = this.state.tacticIds.filter(x => x !== id);
+        } else {
+          this.state.tacticIds.push(id);
+        }
+        this.render();
+      },
 
-/* ====== Rendering ====== */
-function renderScenario(){ const sel = document.getElementById("scenarioSel"); sel.innerHTML = S.scenarios.map(s=>`<option value="${s.id}">${s.name}</option>`).join(""); sel.value = S.scenarioId || ""; }
+      addRandomTactics() {
+        const pool = DATA.tactics.decks
+          .filter(d => this.state.deckIds.includes(d.id))
+          .flatMap(d => d.cards);
+        const n = parseInt(prompt('How many random tactics?', '3')) || 3;
+        const available = pool.filter(c => !this.state.tacticIds.includes(c.id));
+        for (let i = 0; i < n && available.length > 0; i++) {
+          const idx = Math.floor(Math.random() * available.length);
+          this.state.tacticIds.push(available[idx].id);
+          available.splice(idx, 1);
+        }
+        this.render();
+      },
 
-function renderOppChecks(){ const wrap=document.getElementById("oppChecks"); wrap.innerHTML = S.gangs.map(g=>{ const chk=S.oppGangIds.includes(g.id)?"checked":""; return `<label class="check"><input type="checkbox" data-opp="${g.id}" ${chk}> <div><strong>${esc(g.name)}</strong></div></label>`; }).join(""); wrap.querySelectorAll("[data-opp]").forEach(i=>{ i.addEventListener("change", e=>{ const id=e.target.getAttribute("data-opp"); if(e.target.checked){ if(!S.oppGangIds.includes(id)) S.oppGangIds.push(id); } else { S.oppGangIds=S.oppGangIds.filter(x=>x!==id);} save(); }); }); }
+      toggleHirePool(id) {
+        if (this.state.selectedHirePoolIds.includes(id)) {
+          this.state.selectedHirePoolIds = this.state.selectedHirePoolIds.filter(x => x !== id);
+        } else {
+          this.state.selectedHirePoolIds.push(id);
+        }
+        this.render();
+      },
 
-function renderGangs(){ const my=document.getElementById("myGangSel"); my.innerHTML=S.gangs.map(g=>`<option value="${g.id}">${g.name}</option>`).join(""); my.value=S.myGangId||""; renderOppChecks(); const g=getMyGang(); const wrap=document.getElementById("myTableWrap"); if(!g){ wrap.innerHTML = `<div class="muted">Pick a gang.</div>`; return; } const sel=new Set(S.mySelected); wrap.innerHTML=`<table><thead><tr><th style="width:44px"></th><th>Name</th><th>Role</th><th>Rating</th></tr></thead><tbody>${g.fighters.map(f=>`<tr><td><input type="checkbox" data-f="${f.id}" ${sel.has(f.id)?"checked":""}></td><td>${esc(f.name)}</td><td><span class="chip">${esc(f.role||"—")}</span></td><td>${f.rating??0}</td></tr>`).join("")}</tbody></table>`; wrap.querySelectorAll("[data-f]").forEach(cb=>{ cb.addEventListener("change", e=>{ const id=e.target.getAttribute("data-f"); if(e.target.checked){ if(!S.mySelected.includes(id)) S.mySelected.push(id); if(!S.tracking[id]) S.tracking[id]={xpLog:[],misc:0,ooa:false,serious:0,injuryNotes:[],meta:{type:"gang"}}; } else { S.mySelected=S.mySelected.filter(x=>x!==id);} updateMyTotals(); renderTracking(); save(); }); }); updateMyTotals(); }
-function updateMyTotals(){ const g=getMyGang(); if(!g){ document.getElementById("myCount").textContent=0; document.getElementById("myRating").textContent=0; return; } const by=idMap(g.fighters); const pick=S.mySelected.map(id=>by.get(id)).filter(Boolean); document.getElementById("myCount").textContent=pick.length; document.getElementById("myRating").textContent=sum(pick.map(f=>Number(f.rating||0))); }
+      toggleHire(id) {
+        if (this.state.selectedHireFighterIds.includes(id)) {
+          this.state.selectedHireFighterIds = this.state.selectedHireFighterIds.filter(x => x !== id);
+        } else {
+          this.state.selectedHireFighterIds.push(id);
+        }
+        this.render();
+      },
 
-function renderDeckChecks(){ const wrap=document.getElementById("deckChecks"); wrap.innerHTML=S.tactics.decks.map(d=>{ const chk=S.deckIds.includes(d.id)?"checked":""; return `<label class="check"><input type="checkbox" data-deck="${d.id}" ${chk}> <div><strong>${esc(d.name)}</strong> <span class="muted">(${d.cards.length} cards)</span></div></label>`; }).join(""); wrap.querySelectorAll("[data-deck]").forEach(i=>{ i.addEventListener("change", e=>{ const id=e.target.getAttribute("data-deck"); if(e.target.checked){ if(!S.deckIds.includes(id)) S.deckIds.push(id); } else { S.deckIds=S.deckIds.filter(x=>x!==id);} renderTactics(); renderTacticsInBattle(); save(); }); }); }
+      addRandomHires() {
+        const pools = DATA.hires.pools.filter(p => this.state.selectedHirePoolIds.includes(p.id));
+        const allHires = pools.flatMap(p => p.fighters.map(f => `${p.id}_${f.id}`));
+        const n = parseInt(prompt('How many random hires?', '2')) || 2;
+        const available = allHires.filter(id => !this.state.selectedHireFighterIds.includes(id));
+        for (let i = 0; i < n && available.length > 0; i++) {
+          const idx = Math.floor(Math.random() * available.length);
+          this.state.selectedHireFighterIds.push(available[idx]);
+          available.splice(idx, 1);
+        }
+        this.render();
+      },
 
-function renderTactics(){ const pool=poolCards(); const wrap=document.getElementById("tacTableWrap"); const selectedExtra=S.tacticIds.map(id=>({id,card:findCardAnywhere(id)})).filter(x=>x.card&&!pool.find(c=>c.id===x.id)).map(x=>({...x.card, deckId:"(unselected)", deckName:"Unselected Deck"})); const all=[...pool,...selectedExtra]; all.sort((a,b)=>a.name.localeCompare(b.name)); const rows=all.map(c=>{ const checked=S.tacticIds.includes(c.id)?"checked":""; const tag=c.deckName?` <span class="chip">${esc(c.deckName)}</span>`:""; const ghost=selectedExtra.find(x=>x.id===c.id)?` <span class="chip" title="Card kept from an unselected deck">kept</span>`:""; return `<tr><td><input type="checkbox" data-t="${c.id}" ${checked}></td><td>${esc(c.name)}${tag}${ghost}</td><td style="width:100px"><button class="btn" data-td="${c.id}">View</button></td></tr>`; }).join(""); wrap.innerHTML=`<table><thead><tr><th style="width:44px"></th><th>Card</th><th>Details</th></tr></thead><tbody>${rows||`<tr><td colspan="3" class="muted">No cards in pool. Select a deck above.</td></tr>`}</tbody></table>`; wrap.querySelectorAll("[data-t]").forEach(cb=>{ cb.addEventListener("change", e=>{ const id=e.target.getAttribute("data-t"); if(e.target.checked){ if(!S.tacticIds.includes(id)) S.tacticIds.push(id);} else { S.tacticIds=S.tacticIds.filter(x=>x!==id);} document.getElementById("tacCount").textContent=S.tacticIds.length; renderTacticsInBattle(); save(); }); }); wrap.querySelectorAll("[data-td]").forEach(btn=>{ btn.addEventListener("click", ()=>{ const id=btn.getAttribute("data-td"); const c=findCardAnywhere(id); openModal(c?.name||"Tactic", `<div class="muted">${esc(c?.text||"")}</div>`); }); }); document.getElementById("tacCount").textContent=S.tacticIds.length; }
+      toggleCardExpanded(key) {
+        this.state.expandedCards[key] = !this.state.expandedCards[key];
+        this.render();
+      },
 
-function renderTacticsInBattle(){
-  const panel = document.getElementById("tacticsInBattle");
-  const chips = document.getElementById("tacticsChips");
-  const cards = S.tacticIds.map(id=>findCardAnywhere(id)).filter(Boolean);
-  if(!cards.length){ panel.style.display = "none"; chips.innerHTML = ""; return; }
-  panel.style.display = "block";
-  chips.innerHTML = cards.map(c=>`<button class="chip tactic-chip" data-tid="${c.id}" title="Tap to view">${esc(c.name)}</button>`).join(" ");
-  chips.querySelectorAll('.tactic-chip').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const id = btn.getAttribute('data-tid');
-      const c = findCardAnywhere(id);
-      openModal(c?.name || 'Tactic', `<div class="muted">${esc(c?.text || '')}</div>`);
-    });
-    btn.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); btn.click(); } });
-  });
+      addXP(key, note, xp) {
+        if (!this.state.tracking[key]) {
+          this.state.tracking[key] = { xpLog: [], misc: 0, ooa: false, serious: 0, injuryNotes: [], meta: {} };
+        }
+        this.state.tracking[key].xpLog.push({ note, xp, ts: Date.now() });
+        this.render();
+      },
 
-  panel.style.display = "block";
-  chips.innerHTML = cards.map(c=>`<span class="chip" title="${esc(c.text||"")}">${esc(c.name)}</span>`).join(" ");
-}
+      setMiscXP(key, value) {
+        if (!this.state.tracking[key]) return;
+        this.state.tracking[key].misc = parseInt(value) || 0;
+      },
 
-function renderHirePools(){
-  const wrap = document.getElementById("hirePoolChecks");
-  wrap.innerHTML = S.hires.pools.map(p=>{
-    const chk = S.selectedHirePoolIds.includes(p.id) ? "checked" : "";
-    return `<label class="check"><input type="checkbox" data-hp="${p.id}" ${chk}> <div><strong>${esc(p.name)}</strong> <span class="muted">(${p.fighters.length} fighters)</span></div></label>`;
-  }).join("");
-  wrap.querySelectorAll("[data-hp]").forEach(i=>{
-    i.addEventListener("change", e=>{
-      const id = e.target.getAttribute("data-hp");
-      if(e.target.checked){ if(!S.selectedHirePoolIds.includes(id)) S.selectedHirePoolIds.push(id); }
-      else { S.selectedHirePoolIds = S.selectedHirePoolIds.filter(x=>x!==id); }
-      renderHireTable(); renderTracking(); save();
-    });
-  });
-}
+      toggleOoA(key) {
+        if (!this.state.tracking[key]) return;
+        this.state.tracking[key].ooa = !this.state.tracking[key].ooa;
+        this.render();
+      },
 
-function renderHireTable(){
-  const wrap = document.getElementById("hireTableWrap");
-  const roster = hirePoolRoster();
-  const sel = new Set(S.selectedHireFighterIds);
-  const rows = roster.map(f=>{
-    const checked = sel.has(f.id) ? "checked" : "";
-    return `<tr>
-      <td><input type="checkbox" data-hf="${f.id}" ${checked}></td>
-      <td>${esc(f.name)} <span class="chip">${esc(f.role||"Hired")}</span> <span class="chip">${esc(f.poolName)}</span></td>
-      <td>${f.rating ?? 0}</td>
-    </tr>`;
-  }).join("");
-  wrap.innerHTML = `<table>
-    <thead><tr><th style="width:44px"></th><th>Fighter</th><th>Rating</th></tr></thead>
-    <tbody>${rows || `<tr><td colspan="3" class="muted">Enable a pool to show fighters.</td></tr>`}</tbody>
-  </table>`;
-  wrap.querySelectorAll("[data-hf]").forEach(cb=>{
-    cb.addEventListener("change", e=>{
-      const id = e.target.getAttribute("data-hf");
-      if(e.target.checked){ if(!S.selectedHireFighterIds.includes(id)) S.selectedHireFighterIds.push(id); if(!S.tracking[id]) S.tracking[id]={xpLog:[],misc:0,ooa:false,serious:0,injuryNotes:[],meta:{type:"hire", poolId:id.split(":")[0]}}; }
-      else { S.selectedHireFighterIds = S.selectedHireFighterIds.filter(x=>x!==id); }
-      updateHireTotals(); renderTracking(); save();
-    });
-  });
-  updateHireTotals();
-}
+      addInjury(key, injury) {
+        if (!this.state.tracking[key]) return;
+        this.state.tracking[key].serious++;
+        this.state.tracking[key].injuryNotes.push(`Sustained Injury: ${injury}`);
+        this.render();
+      },
 
-function updateHireTotals(){
-  const roster = hirePoolRoster();
-  const by = new Map(roster.map(f=>[f.id,f]));
-  const pick = S.selectedHireFighterIds.map(id=>by.get(id)).filter(Boolean);
-  document.getElementById("hireCount").textContent = pick.length;
-  document.getElementById("hireRating").textContent = sum(pick.map(f=>Number(f.rating||0)));
-}
+      clearLog(key) {
+        if (!confirm('Clear all events for this fighter?')) return;
+        if (!this.state.tracking[key]) return;
+        this.state.tracking[key].xpLog = [];
+        this.state.tracking[key].injuryNotes = [];
+        this.state.tracking[key].misc = 0;
+        this.render();
+      },
 
-/* Serious Injury options */
-const INJURIES = [
-  "Lession Learned","Impressive Scars","Horrid Scars","Bitter Enmity",
-  "Out Cold","Convalescence","Old Battle Wound","Partially Deafened",
-  "Humiliated","Eye Injury","Hand Injury","Hobbled",
-  "Spinal Injurt","Enfeebled","Head Injury", "Multiple Injuries", "Captured",
-  "Critical Injury", "Memorable Death"
-];
+      showOoAModal(key) {
+        const enemies = this.state.oppGangIds.flatMap(gid => {
+          const g = DATA.gangs.find(x => x.id === gid);
+          return g ? g.fighters.map(f => ({ ...f, gangName: g.name })) : [];
+        });
 
-function combinedRoster(){
-  const g = getMyGang();
-  const gangBy = g ? idMap(g.fighters) : new Map();
-  const gang = S.mySelected.map(id=>({ ...gangBy.get(id), id, type:"gang"})).filter(x=>x && x.name);
-  const hires = hirePoolRoster().filter(f=>S.selectedHireFighterIds.includes(f.id));
-  return [...gang, ...hires];
-}
+        if (enemies.length === 0) {
+          alert('No opponent gangs selected!');
+          return;
+        }
 
-function renderTracking(){
-  renderTacticsInBattle();
-  const list=document.getElementById("trackList");
-  const roster = combinedRoster();
-  if(!roster.length){ list.innerHTML=""; return; }
-  list.innerHTML = roster.map(f=>{
-    const key=f.id; const tr=S.tracking[key] ||= {xpLog:[],misc:0,ooa:false,serious:0,injuryNotes:[],meta:{type:f.type, poolId:f.poolId}};
-    const xp = tr.xpLog.reduce((a,b)=>a+b.xp,0) + Number(tr.misc||0);
-    const injurySel = `<select data-injury style="width:100%">${INJURIES.map(i=>`<option value="${i}">${i}</option>`).join("")}</select>`;
-    const tag = f.type === "hire" ? `<span class="chip">Hire: ${esc(f.poolName||"Pool")}</span>` : `<span class="chip">Gang</span>`;
-    return `<div class="card" data-card="${key}">
-      <div class="row" style="justify-content:space-between">
-        <div><strong>${esc(f.name)}</strong> <span class="chip">${esc(f.role||"—")}</span> ${tag} <span class="chip">Rating ${f.rating??0}</span></div>
-        <div class="row"><span class="chip">XP: <strong>${xp}</strong></span><span class="chip">Serious Inj: <strong>${tr.serious||0}</strong></span><span class="chip">OoA: <strong>${tr.ooa?"Yes":"No"}</strong></span></div>
-      </div>
-      <div class="xp-grid" style="margin-top:8px">
-        <button class="btn" data-xp="SI">+1 Serious Injury Caused</button>
-        <button class="btn" data-xp="WRECK">+2 Vehicle Wrecked</button>
-        <button class="btn" data-xp="OOA">+2 Out of Action (select target)</button>
-        <button class="btn" data-xp="PART">+1 Took Part</button>
-        <button class="btn" data-xp="RALLY">+1 Rally</button>
-        <button class="btn" data-xp="ASSIST">+1 Assist Recovery</button>
-      </div>
-      <div class="row" style="margin-top:8px;align-items:center">
-        <label style="margin:0">Misc XP</label>
-        <input type="number" placeholder="0" min="0" value="${tr.misc||0}" data-misc style="width:120px">
-      </div>
-      <div class="row" style="margin-top:8px;align-items:flex-end">
-        <div style="flex:1;min-width:220px"><label>Record Serious Injury (on this fighter)</label>${injurySel}</div>
-        <button class="btn warn" data-add-injury>Add Injury</button>
-        <button class="btn warn" data-mark-ooa>Mark OoA</button>
-        <button class="btn danger" data-clear>Clear Fighter Log</button>
-      </div>
-      <div class="muted" style="margin-top:6px">Log:</div>
-      <ul style="margin:6px 0 0 18px" data-log>
-        ${tr.xpLog.map(ent=>`<li>${esc(ent.note)} <span class="muted">(+${ent.xp} XP)</span></li>`).join("")}
-        ${(tr.injuryNotes||[]).map(txt=>`<li>${esc(txt)}</li>`).join("")}
-      </ul>
-    </div>`;
-  }).join("");
+        const body = `
+          <p style="margin-bottom:12px;font-weight:700;">Select target taken Out of Action:</p>
+          ${enemies.map(f => `
+            <button onclick="app.recordOoA('${key}', '${f.name}', '${f.role}')" style="width:100%;margin:4px 0;">
+              ${f.name} (${f.role}) - ${f.gangName}
+            </button>
+          `).join('')}
+        `;
 
-  // Bind per-card
-  list.querySelectorAll("[data-card]").forEach(card=>{
-    const key=card.getAttribute("data-card");
-    const tr=S.tracking[key] ||= {xpLog:[],misc:0,ooa:false,serious:0,injuryNotes:[],meta:{}};
-    function push(note,xp){ tr.xpLog.push({note,xp,ts:Date.now()}); save(); renderTracking(); }
+        this.openModal('Out of Action', encodeURIComponent(body));
+      },
 
-    card.querySelectorAll("[data-xp]").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        const type=btn.getAttribute("data-xp");
-        if(type==="SI") return push("Caused Serious Injury",1);
-        if(type==="WRECK") return push("Wrecked enemy vehicle",2);
-        if(type==="PART") return push("Took part (scenario allowed)",1);
-        if(type==="RALLY") return push("Broke and rallied",1);
-        if(type==="ASSIST") return push("Assisted Recovery test -> Pinned",1);
-        if(type==="OOA"){
-          const opps=oppFighters(); if(!opps.length){ return openModal("No Opponents",`<div class='muted'>Tick opponent gangs in Setup.</div>`); }
-          const opts=opps.map(o=>`<option value="${o.id}">${esc(o.name)} — ${esc(o.gangName)} (${esc(o.role||"?")})</option>`).join("");
-          openModal("Log Out of Action",`
-            <div class="muted" style="margin-bottom:6px">Select enemy fighter put OoA.</div>
-            <select id="ooaTarget" style="width:100%">${opts}</select>
-            <div class="row" style="margin-top:8px"><button class="btn primary" id="ooaConfirm">Add</button></div>
-          `,()=>{
-            document.getElementById("ooaConfirm").addEventListener("click",()=>{
-              const id=document.getElementById("ooaTarget").value; const tgt=opps.find(x=>x.id===id);
-              if(!tgt) return; const bonus=isLeadChamp(tgt.role)?1:0;
-              push(`Put ${tgt.name} (${tgt.role||"?"}, ${tgt.gangName}) Out of Action`,2+bonus);
-              closeModal();
-            });
+      recordOoA(key, name, role) {
+        let xp = 2;
+        if (role === 'Leader' || role === 'Champion') xp = 3;
+        this.addXP(key, `Put ${name} (${role}) OoA`, xp);
+        this.closeModal();
+      },
+
+      generateReport() {
+        const gang = DATA.gangs.find(g => g.id === this.state.myGangId);
+        const scenario = DATA.scenarios.find(s => s.id === this.state.scenarioId);
+        
+        let report = '=== NECROMUNDA BATTLE REPORT ===\n\n';
+        
+        if (scenario) {
+          report += `SCENARIO: ${scenario.name}\n${scenario.text}\n\n`;
+        }
+        
+        if (gang) {
+          report += `MY GANG: ${gang.name}\n\n`;
+          
+          this.state.mySelected.forEach(fid => {
+            const f = gang.fighters.find(x => x.id === fid);
+            if (!f) return;
+            const key = `gang_${fid}`;
+            const t = this.state.tracking[key];
+            if (!t) return;
+            
+            const totalXP = t.xpLog.reduce((sum, e) => sum + e.xp, 0) + t.misc;
+            report += `${f.name} (${f.role}) - Rating: ${f.rating}\n`;
+            report += `  Total XP: ${totalXP}\n`;
+            if (t.ooa) report += `  STATUS: OUT OF ACTION\n`;
+            report += `  Serious Injuries: ${t.serious}\n`;
+            t.xpLog.forEach(e => report += `  - ${e.note} (+${e.xp})\n`);
+            if (t.misc > 0) report += `  - Misc XP: +${t.misc}\n`;
+            t.injuryNotes.forEach(n => report += `  - ${n}\n`);
+            report += '\n';
           });
         }
-      });
-    });
+        
+        if (this.state.selectedHireFighterIds.length > 0) {
+          report += 'HIRED GUNS:\n\n';
+          this.state.selectedHireFighterIds.forEach(hid => {
+            const [poolId, fid] = hid.split('_');
+            const pool = DATA.hires.pools.find(p => p.id === poolId);
+            const f = pool?.fighters.find(x => x.id === fid);
+            if (!f) return;
+            const key = `hire_${hid}`;
+            const t = this.state.tracking[key];
+            if (!t) return;
+            
+            const totalXP = t.xpLog.reduce((sum, e) => sum + e.xp, 0) + t.misc;
+            report += `${f.name} (${f.role}) - ${pool.name} - Rating: ${f.rating}\n`;
+            report += `  Total XP: ${totalXP}\n`;
+            if (t.ooa) report += `  STATUS: OUT OF ACTION\n`;
+            report += `  Serious Injuries: ${t.serious}\n`;
+            t.xpLog.forEach(e => report += `  - ${e.note} (+${e.xp})\n`);
+            if (t.misc > 0) report += `  - Misc XP: +${t.misc}\n`;
+            t.injuryNotes.forEach(n => report += `  - ${n}\n`);
+            report += '\n';
+          });
+        }
+        
+        if (this.state.tacticIds.length > 0) {
+          report += 'TACTICS USED:\n';
+          this.state.tacticIds.forEach(tid => {
+            const c = DATA.tactics.decks.flatMap(d => d.cards.map(x => ({...x, deckName: d.name}))).find(x => x.id === tid);
+            if (c) report += `- ${c.name} (${c.deckName})\n`;
+          });
+          report += '\n';
+        }
+        
+        if (this.state.oppGangIds.length > 0) {
+          report += 'OPPONENTS:\n';
+          this.state.oppGangIds.forEach(gid => {
+            const g = DATA.gangs.find(x => x.id === gid);
+            if (g) report += `- ${g.name}\n`;
+          });
+        }
+        
+        return report;
+      },
 
-    // misc xp input
-    card.querySelector("input[data-misc]").addEventListener("change", e=>{ tr.misc=Number(e.target.value||0); save(); renderTracking(); });
+      render() {
+        this.renderSetup();
+        this.renderBattle();
+        this.renderReport();
+        this.renderCheatSheet();
+      },
 
-    // mark OoA on our fighter
-    card.querySelector("[data-mark-ooa]").addEventListener("click", ()=>{ tr.ooa=true; save(); renderTracking(); });
+      renderSetup() {
+        const gang = DATA.gangs.find(g => g.id === this.state.myGangId);
+        const scenario = DATA.scenarios.find(s => s.id === this.state.scenarioId);
+        
+        const html = `
+          <!-- SCENARIO -->
+          <div class="section">
+            <h2>📜 SCENARIO</h2>
+            <label>Select Scenario:</label>
+            <select onchange="app.state.scenarioId = this.value || null; app.render();">
+              <option value="">-- Select Scenario --</option>
+              ${DATA.scenarios.map(s => `<option value="${s.id}" ${s.id === this.state.scenarioId ? 'selected' : ''}>${s.name}</option>`).join('')}
+            </select>
+            <button onclick="app.state.scenarioId = DATA.scenarios[Math.floor(Math.random()*DATA.scenarios.length)].id; app.render();" style="margin-top:8px;margin-right:8px;">🎲 RANDOM</button>
+            <button class="secondary" onclick="app.openModal('${scenario?.name || ''}', '<p>${encodeURIComponent(scenario?.text) || ''}</p>')" style="margin-top:8px;">📖 DETAILS</button>
+          </div>
 
-    // add serious injury with select
-    card.querySelector("[data-add-injury]").addEventListener("click", ()=>{
-      const sel = card.querySelector('select[data-injury]');
-      const injury = sel ? sel.value : null;
-      tr.serious = Number(tr.serious||0)+1;
-      if(!tr.injuryNotes) tr.injuryNotes=[];
-      if(injury) tr.injuryNotes.push(`Sustained Injury: ${injury}`);
-      save(); renderTracking();
-    });
+          <!-- MY GANG -->
+          <div class="section">
+            <h2>💀 MY GANG</h2>
+            <label>Select Gang:</label>
+            <select onchange="app.state.myGangId = this.value || null; app.state.mySelected = []; app.render();">
+              <option value="">-- Select Gang --</option>
+              ${DATA.gangs.map(g => `<option value="${g.id}" ${g.id === this.state.myGangId ? 'selected' : ''}>${g.name}</option>`).join('')}
+            </select>
+            
+            ${gang ? `
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;">
+                <span class="chip">Selected: ${this.state.mySelected.length}</span>
+                <span class="chip">Rating: ${this.state.mySelected.reduce((sum,id) => sum+(gang.fighters.find(f=>f.id===id)?.rating||0),0)}</span>
+              </div>
+              
+              <table>
+                <thead>
+                  <tr><th style="width:15%">Select</th><th style="width:40%">Name</th><th style="width:25%">Role</th><th style="width:20%">Rating</th></tr>
+                </thead>
+                <tbody>
+                  ${gang.fighters.map(f => `
+                    <tr>
+                      <td><input type="checkbox" ${this.state.mySelected.includes(f.id) ? 'checked' : ''} onchange="app.toggleFighter('${f.id}')"></td>
+                      <td>${f.name}</td>
+                      <td>${f.role}</td>
+                      <td>${f.rating}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+              
+              <button class="success" onclick="app.addRandomFighters()" style="margin-right:8px;">🎲 ADD RANDOM</button>
+              <button class="danger" onclick="app.state.mySelected = []; app.render();">❌ CLEAR</button>
+            ` : ''}
+          </div>
 
-    // clear
-    card.querySelector("[data-clear]").addEventListener("click", ()=>{
-      if(confirm("Clear this fighter's log?")) { S.tracking[key]={xpLog:[],misc:0,ooa:false,serious:0,injuryNotes:[],meta:tr.meta}; save(); renderTracking(); }
-    });
-  });
-}
+          <!-- OPPONENTS -->
+          <div class="section">
+            <h2>⚔️ OPPONENT GANGS</h2>
+            ${DATA.gangs.map(g => `
+              <label class="checkbox-label">
+                <input type="checkbox" ${this.state.oppGangIds.includes(g.id) ? 'checked' : ''} onchange="app.toggleOpponent('${g.id}')">
+                <strong>${g.name}</strong>
+              </label>
+            `).join('')}
+          </div>
 
-function generateReport(){
-  const g=getMyGang(); const scen=S.scenarios.find(s=>s.id===S.scenarioId);
-  const roster = combinedRoster();
-  const lines=[];
-  lines.push(`Scenario: ${scen?scen.name:"(none)"}` + (scen&&scen.text?`
-- ${scen.text}`:""));
-  lines.push("");
-  lines.push(`My Gang: ${g?g.name:"(none)"}`);
-  const totalRating=sum(roster.filter(r=>r.type==="gang").map(f=>Number(f.rating||0)));
-  const hireRating=sum(roster.filter(r=>r.type==="hire").map(f=>Number(f.rating||0)));
-  lines.push(`Selected Fighters (${roster.length}) | Gang Rating ${totalRating} | Hires Rating ${hireRating}`);
-  roster.forEach(f=>{
-    const tr=S.tracking[f.id]||{xpLog:[],misc:0,ooa:false,serious:0,injuryNotes:[]};
-    const xp=tr.xpLog.reduce((a,b)=>a+b.xp,0)+Number(tr.misc||0);
-    const tag=f.type==="hire"?` | Hire:${f.poolName||"Pool"}`:"";
-    lines.push(`- ${f.name} [${f.role||"—"} | ${f.rating??0}] -> XP ${xp}${tr.ooa?" | OUT OF ACTION":""}${tr.serious?` | Serious Injuries: ${tr.serious}`:""}${tag}`);
-    tr.xpLog.forEach(ent=>lines.push(`   • ${ent.note} (+${ent.xp})`));
-    if(tr.misc) lines.push(`   • Misc XP: +${tr.misc}`);
-    (tr.injuryNotes||[]).forEach(txt=>lines.push(`   • ${txt}`));
-  });
-  lines.push("");
-  const selCards=S.tacticIds.map(id=>findCardAnywhere(id)).filter(Boolean);
-  lines.push(`Tactics (${selCards.length}) (from decks: ${selectedDecks().map(d=>d.name).join(", ")||"—"})`);
-  selCards.forEach(c=>lines.push(`- ${c.name}`));
-  lines.push("");
-  lines.push("Opponent Gangs:");
-  S.oppGangIds.forEach(id=>{ const og=S.gangs.find(g=>g.id===id); if(og) lines.push(`- ${og.name}`); });
-  return lines.join("\n");
-}
+          <!-- TACTICS -->
+          <div class="section">
+            <h2>🎯 TACTICS</h2>
+            <label>Select Decks:</label>
+            ${DATA.tactics.decks.map(d => `
+              <label class="checkbox-label">
+                <input type="checkbox" ${this.state.deckIds.includes(d.id) ? 'checked' : ''} onchange="app.toggleDeck('${d.id}')">
+                <strong>${d.name}</strong>
+              </label>
+            `).join('')}
+            
+            ${this.state.deckIds.length > 0 ? `
+              <table>
+                <thead>
+                  <tr><th style="width:15%">Select</th><th style="width:40%">Card</th><th style="width:30%">Deck</th><th style="width:15%">View</th></tr>
+                </thead>
+                <tbody>
+                  ${DATA.tactics.decks
+                    .filter(d => this.state.deckIds.includes(d.id))
+                    .flatMap(d => d.cards.map(c => ({...c, deckName: d.name})))
+                    .map(c => `
+                      <tr>
+                        <td><input type="checkbox" ${this.state.tacticIds.includes(c.id) ? 'checked' : ''} onchange="app.toggleTactic('${c.id}')"></td>
+                        <td>${c.name}</td>
+                        <td>${c.deckName}</td>
+                        <td><button onclick="app.openModal('${c.name}', '<p>${encodeURIComponent(c.text)}</p>')" style="padding:4px 8px;font-size:12px;">VIEW</button></td>
+                      </tr>
+                    `).join('')}
+                </tbody>
+              </table>
+              
+              <button class="toxic" onclick="app.addRandomTactics()" style="margin-right:8px;">🎲 ADD RANDOM</button>
+              <button class="danger" onclick="app.state.tacticIds = []; app.render();">❌ CLEAR</button>
+            ` : ''}
+          </div>
 
-function resetStateToDefaults(){
-S.gangs = EMBED.gangs;
-S.tactics = EMBED.tactics;
-S.scenarios = EMBED.scenarios;
-S.hires = EMBED.hires;
-S.myGangId = EMBED.gangs[0]?.id || null;
-S.mySelected = [];
-S.oppGangIds = [];
-S.deckIds = EMBED.tactics.decks[0] ? [EMBED.tactics.decks[0].id] : [];
-S.tacticIds = [];
-S.scenarioId = EMBED.scenarios[0]?.id || null;
-S.selectedHirePoolIds = EMBED.hires.pools[0] ? [EMBED.hires.pools[0].id] : [];
-S.selectedHireFighterIds = [];
-S.tracking = {};
-}
+          <!-- HIRES -->
+          <div class="section">
+            <h2>💰 BOUNTY HUNTERS & HIRED GUNS</h2>
+            <label>Enable Pools:</label>
+            ${DATA.hires.pools.map(p => `
+              <label class="checkbox-label">
+                <input type="checkbox" ${this.state.selectedHirePoolIds.includes(p.id) ? 'checked' : ''} onchange="app.toggleHirePool('${p.id}')">
+                <strong>${p.name}</strong>
+              </label>
+            `).join('')}
+            
+            ${this.state.selectedHirePoolIds.length > 0 ? (() => {
+              const pools = DATA.hires.pools.filter(p => this.state.selectedHirePoolIds.includes(p.id));
+              const allHires = pools.flatMap(p => p.fighters.map(f => ({...f, poolId: p.id, poolName: p.name, fid: `${p.id}_${f.id}`})));
+              
+              return `
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;">
+                  <span class="chip">Hires: ${this.state.selectedHireFighterIds.length}</span>
+                  <span class="chip">Rating: ${this.state.selectedHireFighterIds.reduce((sum,id) => sum+(allHires.find(f=>f.fid===id)?.rating||0),0)}</span>
+                </div>
+                
+                <table>
+                  <thead>
+                    <tr><th style="width:12%">Select</th><th style="width:30%">Name</th><th style="width:20%">Role</th><th style="width:18%">Rating</th><th style="width:20%">Pool</th></tr>
+                  </thead>
+                  <tbody>
+                    ${allHires.map(f => `
+                      <tr>
+                        <td><input type="checkbox" ${this.state.selectedHireFighterIds.includes(f.fid) ? 'checked' : ''} onchange="app.toggleHire('${f.fid}')"></td>
+                        <td>${f.name}</td>
+                        <td>${f.role}</td>
+                        <td>${f.rating}</td>
+                        <td>${f.poolName}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+                
+                <button class="success" onclick="app.addRandomHires()" style="margin-right:8px;">🎲 ADD RANDOM</button>
+                <button class="danger" onclick="app.state.selectedHireFighterIds = []; app.render();">❌ CLEAR</button>
+              `;
+            })() : ''}
+          </div>
+        `;
+        
+        document.getElementById('setup-page').innerHTML = html;
+      },
 
-/* ====== UI wiring ====== */
-function renderAll(){ renderScenario(); renderGangs(); renderDeckChecks(); renderTactics(); renderHirePools(); renderHireTable(); renderTracking(); }
+      renderBattle() {
+        const gang = DATA.gangs.find(g => g.id === this.state.myGangId);
+        
+        let html = `
+          <!-- TACTICS IN PLAY -->
+          <div class="tactics-panel">
+            <h3>🎯 TACTICS IN PLAY</h3>
+            <div>
+              ${this.state.tacticIds.length > 0 ? this.state.tacticIds.map(tid => {
+                const c = DATA.tactics.decks.flatMap(d => d.cards).find(x => x.id === tid);
+                return c ? `<span class="chip" style="cursor:pointer;" onclick="app.openModal('${c.name}', '<p>${encodeURIComponent(c.text)}</p>')">${c.name}</span>` : '';
+              }).join('') : '<span class="chip">None selected</span>'}
+            </div>
+          </div>
+        `;
+        
+        if (gang) {
+          const gangFighters = this.state.mySelected.map(fid => {
+            const f = gang.fighters.find(x => x.id === fid);
+            if (!f) return null;
+            const key = `gang_${fid}`;
+            if (!this.state.tracking[key]) {
+              this.state.tracking[key] = { xpLog: [], misc: 0, ooa: false, serious: 0, injuryNotes: [], meta: { type: 'gang' } };
+            }
+            return { ...f, key, source: gang.name };
+          }).filter(Boolean);
 
-function hardReset(){ localStorage.removeItem('necro_steel_v1'); resetStateToDefaults(); renderAll(); window.location = window.location.href}
+          const hireFighters = this.state.selectedHireFighterIds.map(hid => {
+            const [poolId, fid] = hid.split('_');
+            const pool = DATA.hires.pools.find(p => p.id === poolId);
+            const f = pool?.fighters.find(x => x.id === fid);
+            if (!f) return null;
+            const key = `hire_${hid}`;
+            if (!this.state.tracking[key]) {
+              this.state.tracking[key] = { xpLog: [], misc: 0, ooa: false, serious: 0, injuryNotes: [], meta: { type: 'hire', poolId } };
+            }
+            return { ...f, key, source: `Hire: ${pool.name}` };
+          }).filter(Boolean);
 
-// tabs
-$$('.tab-btn').forEach(b=>b.addEventListener('click',()=>{ $$('.tab-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); const t=b.getAttribute('data-tab'); document.getElementById('setup').hidden = t!=="setup"; document.getElementById('tracking').hidden = t!=="tracking"; document.getElementById('report').hidden = t!=="report"; }));
+          const allFighters = [...gangFighters, ...hireFighters];
 
-$('#resetBtn').addEventListener('click',()=>{ if(confirm('Reset everything to default and clear saved data?')) { hardReset(); alert('Reset complete.'); }});
+          allFighters.forEach(f => {
+            const t = this.state.tracking[f.key] || { xpLog: [], misc: 0, ooa: false, serious: 0, injuryNotes: [], meta: {} };
+            const totalXP = t.xpLog.reduce((sum, e) => sum + e.xp, 0) + t.misc;
+            const isExpanded = this.state.expandedCards[f.key];
 
-// scenario controls
-$('#scenarioSel').addEventListener('change',e=>{S.scenarioId=e.target.value; save();});
-$('#scenarioRnd').addEventListener('click',()=>{ if(S.scenarios.length){ S.scenarioId=randPick(S.scenarios,1)[0].id; renderScenario(); save(); }});
-$('#scenarioInfo').addEventListener('click',()=>{ const s=S.scenarios.find(x=>x.id===S.scenarioId); openModal(s?.name||'Scenario', `<div class="muted">${esc(s?.text||'')}</div>`); });
+            html += `
+              <div class="fighter-card ${t.ooa ? 'ooa' : ''} ${!isExpanded ? 'collapsed' : ''}" onclick="if(event.target.tagName !== 'BUTTON' && event.target.tagName !== 'INPUT' && event.target.tagName !== 'SELECT') app.toggleCardExpanded('${f.key}')">
+                ${!isExpanded ? `
+                  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                    <div>
+                      <h3 style="font-size:18px;font-weight:900;text-transform:uppercase;margin-bottom:4px;">${f.name}</h3>
+                      <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                        <span class="chip" style="font-size:10px;padding:4px 8px;">${f.role}</span>
+                        <span class="chip" style="font-size:10px;padding:4px 8px;">XP: ${totalXP}</span>
+                        ${t.ooa ? '<span class="chip" style="background:#ff3838;font-size:10px;padding:4px 8px;">OOA</span>' : ''}
+                      </div>
+                    </div>
+                    <div style="font-size:24px;font-weight:900;color:${t.ooa?'#fafaf5':'#0a0a0a'};">▼</div>
+                  </div>
+                ` : `
+                  <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                    <h3 style="font-size:18px;font-weight:900;margin-bottom:12px;text-transform:uppercase;border-bottom:3px solid #0a0a0a;padding-bottom:8px;flex:1;">${f.name}</h3>
+                    <div style="font-size:24px;font-weight:900;margin-left:12px;color:${t.ooa?'#fafaf5':'#0a0a0a'};">▲</div>
+                  </div>
+                  
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+                    <span class="chip">${f.role}</span>
+                    <span class="chip">${f.source}</span>
+                    <span class="chip">Rating: ${f.rating}</span>
+                    <span class="chip">XP: ${totalXP}</span>
+                    <span class="chip">Serious: ${t.serious}</span>
+                    ${t.ooa ? '<span class="chip" style="background:#ff3838;">OUT OF ACTION</span>' : ''}
+                  </div>
+                  
+                  <div class="button-grid" onclick="event.stopPropagation();">
+                    <button class="success" onclick="app.addXP('${f.key}','Serious Injury Caused',1)">+1 SERIOUS INJ</button>
+                    <button class="success" onclick="app.addXP('${f.key}','Vehicle Wrecked',2)">+2 VEHICLE</button>
+                    <button class="danger" onclick="app.showOoAModal('${f.key}')">+2 OUT OF ACTION</button>
+                    <button class="secondary" onclick="app.addXP('${f.key}','Took Part',1)">+1 TOOK PART</button>
+                    <button class="secondary" onclick="app.addXP('${f.key}','Rally',1)">+1 RALLY</button>
+                    <button class="secondary" onclick="app.addXP('${f.key}','Assist Recovery',1)">+1 ASSIST</button>
+                  </div>
+                  
+                  <div onclick="event.stopPropagation();">
+                    <label style="display:block;font-weight:700;margin-top:12px;text-transform:uppercase;">Misc XP:</label>
+                    <input type="number" value="${t.misc}" onchange="app.setMiscXP('${f.key}', this.value); app.render();" style="width:100%;padding:10px;border:4px solid #0a0a0a;background:#fafaf5;font-family:inherit;font-size:14px;margin-bottom:8px;box-shadow:3px 3px 0 #0a0a0a;">
+                    
+                    <div style="margin:12px 0;">
+                      <label style="display:block;font-weight:700;text-transform:uppercase;">Add Serious Injury:</label>
+                      <select id="injury_${f.key}" style="width:100%;padding:10px;border:4px solid #0a0a0a;background:#fafaf5;font-family:inherit;font-size:14px;margin-bottom:8px;box-shadow:3px 3px 0 #0a0a0a;">
+                        ${DATA.injuries.map(inj => `<option value="${inj}">${inj}</option>`).join('')}
+                      </select>
+                      <button class="danger" onclick="app.addInjury('${f.key}', document.getElementById('injury_${f.key}').value)" style="margin-top:8px;">ADD INJURY</button>
+                    </div>
+                    
+                    <button class="${t.ooa ? 'success' : 'danger'}" onclick="app.toggleOoA('${f.key}')" style="margin-right:8px;margin-top:8px;">
+                      ${t.ooa ? '✓ REVIVE' : '💀 MARK OOA'}
+                    </button>
+                    <button class="danger" onclick="app.clearLog('${f.key}')" style="margin-top:8px;">CLEAR LOG</button>
+                    
+                    <div class="log">
+                      ${t.xpLog.map(e => `<div class="log-entry">${e.note} (+${e.xp} XP)</div>`).join('')}
+                      ${t.injuryNotes.map(n => `<div class="log-entry" style="color:${t.ooa?'#fafaf5':'#ff3838'};">🩸 ${n}</div>`).join('')}
+                      ${t.xpLog.length === 0 && t.injuryNotes.length === 0 ? '<div class="log-entry">No events yet</div>' : ''}
+                    </div>
+                  </div>
+                `}
+              </div>
+            `;
+          });
+        }
+        
+        html += `
+          <div class="section">
+            <h2>💥 D66 LASTING INJURY TABLE</h2>
+            <table style="font-size:12px;">
+              <thead>
+                <tr><th>D66</th><th>Result</th></tr>
+              </thead>
+              <tbody>
+                <tr><td style="font-weight:900;background:#d94f2e;color:#fafaf5;">11-26</td><td>Out Cold: Miss next game</td></tr>
+                <tr><td style="font-weight:900;background:#d94f2e;color:#fafaf5;">31-35</td><td>Convalescence: Miss D3 games</td></tr>
+                <tr><td style="font-weight:900;background:#d94f2e;color:#fafaf5;">36</td><td>Humiliated: -1 XP</td></tr>
+                <tr><td style="font-weight:900;background:#d94f2e;color:#fafaf5;">41-45</td><td>Head Injury: -1 Intelligence</td></tr>
+                <tr><td style="font-weight:900;background:#d94f2e;color:#fafaf5;">46</td><td>Eye Injury: -1 BS</td></tr>
+                <tr><td style="font-weight:900;background:#d94f2e;color:#fafaf5;">51</td><td>Hand Injury: -1 WS</td></tr>
+                <tr><td style="font-weight:900;background:#d94f2e;color:#fafaf5;">52-53</td><td>Hobbled: -1 Movement</td></tr>
+                <tr><td style="font-weight:900;background:#d94f2e;color:#fafaf5;">54</td><td>Spinal Injury: -1 Strength</td></tr>
+                <tr><td style="font-weight:900;background:#d94f2e;color:#fafaf5;">55</td><td>Enfeebled: -1 Toughness</td></tr>
+                <tr><td style="font-weight:900;background:#d94f2e;color:#fafaf5;">56</td><td>Partially Deafened: -1 Cool/Willpower</td></tr>
+                <tr><td style="font-weight:900;background:#d94f2e;color:#fafaf5;">61-65</td><td>Multiple Injuries: Roll twice</td></tr>
+                <tr><td style="font-weight:900;background:#d94f2e;color:#fafaf5;">66</td><td>Memorable Death: Remove from roster</td></tr>
+              </tbody>
+            </table>
+          </div>
+        `;
+        
+        document.getElementById('battle-page').innerHTML = html;
+      },
 
-// my gang selection
-$('#myGangSel').addEventListener('change',e=>{ S.myGangId=e.target.value; S.mySelected=[]; renderGangs(); renderTracking(); save(); });
+      renderReport() {
+        const report = this.generateReport();
+        
+        const html = `
+          <div class="section">
+            <h2>📋 BATTLE REPORT</h2>
+            <button class="success" style="margin-right:8px;">📝 GENERATE</button>
+            <button onclick="navigator.clipboard.writeText(document.getElementById('reportText').value).then(() => alert('Report copied!'));">📋 COPY</button>
+            <textarea id="reportText" rows="30" style="width:100%;padding:10px;border:4px solid #0a0a0a;background:#fafaf5;font-family:monospace;font-size:14px;margin-top:12px;box-shadow:3px 3px 0 #0a0a0a;" readonly>${report}</textarea>
+          </div>
+        `;
+        
+        document.getElementById('report-page').innerHTML = html;
+      },
 
-// random / clear fighters
-$('#rndMyBtn').addEventListener('click',()=>{ const g=getMyGang(); if(!g) return; const n=Math.max(1,Number($('#rndMyCount').value||1)); const pool=g.fighters.filter(f=>!S.mySelected.includes(f.id)); const picks=randPick(pool,n); picks.forEach(p=>{ if(!S.mySelected.includes(p.id)) S.mySelected.push(p.id); if(!S.tracking[p.id]) S.tracking[p.id]={xpLog:[],misc:0,ooa:false,serious:0,injuryNotes:[],meta:{type:'gang'}}; }); renderGangs(); renderTracking(); save(); });
-$('#clearMyBtn').addEventListener('click',()=>{ S.mySelected=[]; renderGangs(); renderTracking(); save(); });
+      renderCheatSheet() {
+        const html = `
+          <div class="section">
+            <h2>📖 PHASE SEQUENCE</h2>
+            <ol style="line-height:2;">
+              <li><strong>Priority:</strong> Roll off (highest wins)</li>
+              <li><strong>Activation:</strong> Alternate activating fighters</li>
+              <li><strong>End Phase:</strong> Rally, remove blast markers, reset status</li>
+              <li><strong>Recovery:</strong> Roll for Seriously Injured fighters</li>
+            </ol>
+          </div>
 
-// tactics random/clear
-$('#rndTacBtn').addEventListener('click',()=>{ const n=Math.max(1,Number($('#rndTacCount').value||1)); const pool=poolCards().filter(c=>!S.tacticIds.includes(c.id)); const picks=randPick(pool,n); S.tacticIds.push(...picks.map(p=>p.id)); renderTactics(); renderTacticsInBattle(); save(); });
-$('#clearTacBtn').addEventListener('click',()=>{ S.tacticIds=[]; renderTactics(); renderTacticsInBattle(); save(); });
+          <div class="section">
+            <h2>🎯 ACTIONS</h2>
+            <table>
+              <thead>
+                <tr><th>Action</th><th>Effect</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Move (Simple)</td><td>Move up to M"</td></tr>
+                <tr><td>Charge (Double)</td><td>Move + engage enemy</td></tr>
+                <tr><td>Shoot (Basic/Double)</td><td>Make ranged attack</td></tr>
+                <tr><td>Fight (Basic)</td><td>Make close combat attacks</td></tr>
+                <tr><td>Take Cover (Basic)</td><td>+1 to save until activation</td></tr>
+                <tr><td>Coup de Grace (Simple)</td><td>Auto-wound Seriously Injured</td></tr>
+              </tbody>
+            </table>
+          </div>
 
-// hires pools and fighters
-$('#rndHireBtn').addEventListener('click',()=>{ const n=Math.max(1,Number($('#rndHireCount').value||1)); const pool=hirePoolRoster().filter(f=>!S.selectedHireFighterIds.includes(f.id)); const picks=randPick(pool,n); picks.forEach(p=>{ if(!S.selectedHireFighterIds.includes(p.id)) S.selectedHireFighterIds.push(p.id); if(!S.tracking[p.id]) S.tracking[p.id]={xpLog:[],misc:0,ooa:false,serious:0,injuryNotes:[],meta:{type:'hire', poolId:p.poolId}}; }); renderHireTable(); renderTracking(); save(); });
-$('#clearHireBtn').addEventListener('click',()=>{ S.selectedHireFighterIds=[]; renderHireTable(); renderTracking(); save(); });
+          <div class="section">
+            <h2>🎲 HIT MODIFIERS</h2>
+            <table>
+              <thead>
+                <tr><th>Situation</th><th>Modifier</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Target in Cover</td><td>-1</td></tr>
+                <tr><td>Target Obscured</td><td>-1</td></tr>
+                <tr><td>Long Range</td><td>-1</td></tr>
+                <tr><td>Firing from High Ground</td><td>+1</td></tr>
+                <tr><td>Aiming (Shoot Double)</td><td>+1</td></tr>
+              </tbody>
+            </table>
+          </div>
 
-// report
-$('#genBtn').addEventListener('click',()=>{ document.getElementById('reportOut').value = generateReport(); });
-$('#copyBtn').addEventListener('click', async()=>{ const txt=document.getElementById('reportOut').value||generateReport(); document.getElementById('reportOut').value=txt; try{await navigator.clipboard.writeText(txt); alert('Report copied.');}catch{alert('Copy failed; please copy manually.');} });
+          <div class="section">
+            <h2>💥 INJURY ROLL</h2>
+            <table>
+              <thead>
+                <tr><th>Roll</th><th>Result</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1-2</td><td>Flesh Wound</td></tr>
+                <tr><td>3-5</td><td>Seriously Injured</td></tr>
+                <tr><td>6+</td><td>Out of Action</td></tr>
+              </tbody>
+            </table>
+          </div>
 
-// modal
-const backdrop=document.getElementById('backdrop');
-function openModal(title, html, bind){ document.getElementById('modalTitle').textContent=title||'Details'; document.getElementById('modalBody').innerHTML=html||''; backdrop.style.display='flex'; if(bind) setTimeout(bind,0); }
-function closeModal(){ backdrop.style.display='none'; }
-$('#closeModal').addEventListener('click', closeModal);
-backdrop.addEventListener('click', e=>{ if(e.target===backdrop) closeModal(); });
+          <div class="section">
+            <h2>🏆 EXPERIENCE</h2>
+            <table>
+              <thead>
+                <tr><th>Achievement</th><th>XP</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Took Part in Battle</td><td>+1</td></tr>
+                <tr><td>Put Enemy Out of Action</td><td>+2</td></tr>
+                <tr><td>Put Enemy Leader/Champion OoA</td><td>+3</td></tr>
+                <tr><td>Caused Serious Injury</td><td>+1</td></tr>
+                <tr><td>Rallied</td><td>+1</td></tr>
+                <tr><td>Assisted Recovery</td><td>+1</td></tr>
+                <tr><td>Wrecked Vehicle</td><td>+2</td></tr>
+              </tbody>
+            </table>
+          </div>
+        `;
+        
+        document.getElementById('cheat-page').innerHTML = html;
+      }
+    };
 
-// boot
-(function init(){ load(); renderAll(); })();
-</script>
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', () => app.init());
+  </script>
 </body>
 </html>

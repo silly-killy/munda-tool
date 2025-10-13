@@ -83,7 +83,7 @@
       box-shadow: none;
     }
     
-    button.danger { background: var(--red); color: var(--white); }
+    button.danger { background: var(--white); color: var(--red); }
     button.success { background: var(--green); }
     button.secondary { background: var(--steel); color: var(--white); }
     button.toxic { background: var(--toxic); }
@@ -132,6 +132,10 @@
     
     .section:nth-child(even) { transform: rotate(0.5deg); background: var(--yellow); }
     .section:nth-child(3n) { background: var(--green); }
+
+    .section ol {
+      padding-left: 15px;
+    }
     
     h2 {
       font-size: 20px;
@@ -317,6 +321,12 @@
       text-transform: uppercase;
       margin: 0;
     }
+
+    #modal-body b {
+      color: var(--red);
+      font-weight: bolder;
+      font-size: 16px;
+    }
     
     /* === TACTICS PANEL === */
     .tactics-panel {
@@ -346,6 +356,7 @@
       font-size: 11px;
       padding: 8px;
     }
+
     
     /* === MOBILE === */
     @media (max-width: 640px) {
@@ -380,7 +391,7 @@
 <body>
   <!-- HEADER -->
   <header>
-    <h1>Killy's Munda World <button class="danger" onclick="app.reset()">🔥 RESET</button> </h1>
+    <h1>Killy's Munda World <button class="danger" onclick="app.reset()">RESET</button> </h1>
   </header>
 
   <!-- TABS -->
@@ -417,174 +428,10 @@
     </div>
   </div>
 
+   <!-- Load data first -->
+  <script src="data.js"></script>
+  
   <script>
-    const DATA = {
-      gangs: [
-        {
-          id: "goliath",
-          name: "Goliath",
-          fighters: [
-            {id:"g_lead",name:"Goliath Leader",role:"Leader",rating:150},
-            {id:"g_champ1",name:"Goliath Champion",role:"Champion",rating:110},
-            {id:"g_champ2",name:"Stimmer",role:"Champion",rating:115},
-            {id:"g_ganger1",name:"Goliath Ganger",role:"Ganger",rating:60},
-            {id:"g_ganger2",name:"Goliath Ganger",role:"Ganger",rating:60},
-            {id:"g_juve",name:"Goliath Juve",role:"Juve",rating:35}
-          ]
-        },
-        {
-          id: "escher",
-          name: "Escher",
-          fighters: [
-            {id:"e_lead",name:"Escher Queen",role:"Leader",rating:145},
-            {id:"e_champ1",name:"Escher Champion",role:"Champion",rating:105},
-            {id:"e_champ2",name:"Death-Maiden",role:"Champion",rating:120},
-            {id:"e_ganger1",name:"Escher Ganger",role:"Ganger",rating:55},
-            {id:"e_ganger2",name:"Escher Ganger",role:"Ganger",rating:55},
-            {id:"e_juve",name:"Little Sister",role:"Juve",rating:30}
-          ]
-        },
-        {
-          id: "orlock",
-          name: "Orlock",
-          fighters: [
-            {id:"o_lead",name:"Road Boss",role:"Leader",rating:140},
-            {id:"o_champ1",name:"Road Sergeant",role:"Champion",rating:100},
-            {id:"o_champ2",name:"Arms Master",role:"Champion",rating:105},
-            {id:"o_ganger1",name:"Gunner",role:"Ganger",rating:65},
-            {id:"o_ganger2",name:"Orlock Ganger",role:"Ganger",rating:55},
-            {id:"o_juve",name:"Greenhorn",role:"Juve",rating:30}
-          ]
-        },
-        {
-          id: "van_saar",
-          name: "Van Saar",
-          fighters: [
-            {id:"v_lead",name:"Van Saar Prime",role:"Leader",rating:155},
-            {id:"v_champ1",name:"Augmek",role:"Champion",rating:115},
-            {id:"v_champ2",name:"Archeotek",role:"Champion",rating:120},
-            {id:"v_ganger1",name:"Van Saar Tek",role:"Ganger",rating:70},
-            {id:"v_ganger2",name:"Van Saar Ganger",role:"Ganger",rating:60},
-            {id:"v_juve",name:"Van Saar Juve",role:"Juve",rating:35}
-          ]
-        },
-        {
-          id: "cawdor",
-          name: "Cawdor",
-          fighters: [
-            {id:"c_lead",name:"Word-Keeper",role:"Leader",rating:135},
-            {id:"c_champ1",name:"Cawdor Champion",role:"Champion",rating:95},
-            {id:"c_champ2",name:"Sheen Bird",role:"Champion",rating:100},
-            {id:"c_ganger1",name:"Cawdor Ganger",role:"Ganger",rating:50},
-            {id:"c_ganger2",name:"Bonepicker",role:"Ganger",rating:45},
-            {id:"c_juve",name:"Cawdor Juve",role:"Juve",rating:25}
-          ]
-        },
-        {
-          id: "delaque",
-          name: "Delaque",
-          fighters: [
-            {id:"d_lead",name:"Master of Shadow",role:"Leader",rating:150},
-            {id:"d_champ1",name:"Phantom",role:"Champion",rating:110},
-            {id:"d_champ2",name:"Nacht-Ghul",role:"Champion",rating:115},
-            {id:"d_ganger1",name:"Shadow",role:"Ganger",rating:60},
-            {id:"d_ganger2",name:"Delaque Ganger",role:"Ganger",rating:55},
-            {id:"d_juve",name:"Ghost",role:"Juve",rating:30}
-          ]
-        }
-      ],
-      tactics: {
-        decks: [
-          {
-            id: "normal",
-            name: "Normal Deck",
-            cards: [
-              {id:"t_overwatch",name:"Overwatch",text:"Reaction. When an enemy fighter moves within LoS, interrupt and make a ranged attack at -1 to hit."},
-              {id:"t_ambush",name:"Ambush",text:"Play at start of round. One fighter can make a free Shoot action before Priority roll."},
-              {id:"t_evade",name:"Evade",text:"Reaction. When targeted by ranged attack, roll Initiative. Success: attacker suffers -1 to hit."},
-              {id:"t_medicae",name:"Medicae",text:"Action. Remove a Flesh Wound from a friendly fighter within 3\"."},
-              {id:"t_smoke",name:"Smoke Grenades",text:"Action. Place 5\" smoke template within 6\". Blocks LoS until End Phase."},
-              {id:"t_retreat",name:"Tactical Withdrawal",text:"Reaction. When bottled, one fighter may make free Move action toward table edge."}
-            ]
-          },
-          {
-            id: "underdog",
-            name: "Underdog Deck",
-            cards: [
-              {id:"t_scavenge",name:"Scavenge",text:"Start of battle. Gain D3 random equipment items from common list."},
-              {id:"t_rad",name:"Rad Pulse",text:"Action. Place 3\" blast within 12\". All fighters take S3 hit ignoring armor."},
-              {id:"t_desperate",name:"Desperate Measures",text:"Play when making injury roll. Add +1 to the roll."},
-              {id:"t_booby",name:"Booby Trap",text:"Deploy phase. Place marker in terrain. First enemy within 2\" takes S4 D2 hit."}
-            ]
-          },
-          {
-            id: "dominance",
-            name: "Dominance Deck",
-            cards: [
-              {id:"t_suppression",name:"Suppression Fire",text:"Action. Pin D3 enemy fighters within 18\" and LoS."},
-              {id:"t_coordinate",name:"Coordinated Strike",text:"Play before activation. Up to 3 friendly fighters can activate together."},
-              {id:"t_ruthless",name:"Ruthless Efficiency",text:"Play when taking fighter OoA. Gain +1 Rep for scenario."}
-            ]
-          }
-        ]
-      },
-      scenarios: [
-        {id:"s_standoff",name:"Stand-off",text:"Standard battle. Control objectives. Winner: most fighters within 6\" of center at end."},
-        {id:"s_ambush",name:"Ambush",text:"Defender deploys first. Attacker enters from random edge. Kill/rout enemy to win."},
-        {id:"s_skirmish",name:"Skirmish",text:"Random deployment. First blood scenario. First gang to take 3 enemies OoA wins."},
-        {id:"s_salvage",name:"Salvage Operation",text:"5 loot markers. Carry off table edge. Gang with most loot wins."},
-        {id:"s_sabotage",name:"Sabotage",text:"Attacker must destroy 3 objectives in enemy territory. Defender prevents."},
-        {id:"s_tunnel",name:"Tunnel Skirmish",text:"Tight corridors. No long range. Close combat favored. Bottle test at 50%."}
-      ],
-      hires: {
-        pools: [
-          {
-            id: "bounty",
-            name: "Bounty Hunters",
-            fighters: [
-              {id:"bh_kara",name:"Kara Nine-Fingers",role:"Bounty Hunter",rating:160},
-              {id:"bh_slate",name:"Slate Merdena",role:"Bounty Hunter",rating:155},
-              {id:"bh_yar",name:"Yar Umbra",role:"Bounty Hunter",rating:165}
-            ]
-          },
-          {
-            id: "hired",
-            name: "Hired Guns",
-            fighters: [
-              {id:"hg_rogue",name:"Rogue Doc",role:"Hired Gun",rating:90},
-              {id:"hg_dome",name:"Dome Runner",role:"Hired Gun",rating:85},
-              {id:"hg_hive",name:"Hive Scum",role:"Hired Gun",rating:70}
-            ]
-          },
-          {
-            id: "hangers",
-            name: "Hangers-on",
-            fighters: [
-              {id:"ho_ammo",name:"Ammo-Jack",role:"Hanger-on",rating:40},
-              {id:"ho_sloppo",name:"Slopper",role:"Hanger-on",rating:35}
-            ]
-          }
-        ]
-      },
-      injuries: [
-        "Flesh Wound",
-        "Concussion",
-        "Grievous Injury",
-        "Critical Injury",
-        "Old Battle Wound",
-        "Hobbled",
-        "Enfeebled",
-        "Partially Deafened",
-        "Hand Injury",
-        "Head Injury",
-        "Eye Injury",
-        "Chest Wound",
-        "Spinal Injury",
-        "Leg Injury",
-        "Arm Injury"
-      ]
-    };
-
     const app = {
       state: {
         myGangId: null,
@@ -918,8 +765,20 @@
               <option value="">-- Select Scenario --</option>
               ${DATA.scenarios.map(s => `<option value="${s.id}" ${s.id === this.state.scenarioId ? 'selected' : ''}>${s.name}</option>`).join('')}
             </select>
-            <button onclick="app.state.scenarioId = DATA.scenarios[Math.floor(Math.random()*DATA.scenarios.length)].id; app.render();" style="margin-top:8px;margin-right:8px;">🎲 RANDOM</button>
-            <button class="secondary" onclick="app.openModal('${scenario?.name || ''}', '<p>${encodeURIComponent(scenario?.text) || ''}</p>')" style="margin-top:8px;">📖 DETAILS</button>
+            <button onclick="app.state.scenarioId = DATA.scenarios[Math.floor(Math.random()*DATA.scenarios.length)].id; app.render();" style="margin-top:8px;margin-right:8px;">RANDOM</button>
+            <button class="secondary" onclick="app.openModal('${scenario?.name || ''}', '<p>${encodeURIComponent(scenario?.text) || ''}</p>')" style="margin-top:8px;">DETAILS</button>
+            <table style="font-size:12px;">
+              <thead>
+                <tr><th width="20%">2D6</th><th>Result</th></tr>
+              </thead>
+              <tbody>
+                <tr><td width="20%" style="font-weight:900;background:#d94f2e;color:#fafaf5;">2-3</td><td>The player with the greater number of Structures chooses which scenario to play. If both players have the same number of Structures, the winner of a roll-off chooses which scenario to play. If the scenario dictates there is an attacker and a defender, the player who chooses the scenario is the attacker.</td></tr>
+                <tr><td width="20%" style="font-weight:900;background:#d94f2e;color:#fafaf5;">4-5</td><td>Play the Gunk Tank </td></tr>
+                <tr><td width="20%" style="font-weight:900;background:#d94f2e;color:#fafaf5;">6-7</td><td>Play the Mining Expedition</td></tr>
+                <tr><td width="20%" style="font-weight:900;background:#d94f2e;color:#fafaf5;">8-9</td><td>Play the The Big Score</td></tr>
+                <tr><td width="20%" style="font-weight:900;background:#d94f2e;color:#fafaf5;">10-12</td><td>The player with fewer Structures chooses which scenario to play. If both players have the same number of Structures, the winner of a roll-off chooses which scenario to play. If the scenario dictates there is an attacker and a defender, the player who chooses the scenario is the attacker.</td></tr>
+              </tbody>
+            </table>
           </div>
 
           <!-- MY GANG -->
@@ -953,8 +812,8 @@
                 </tbody>
               </table>
               
-              <button class="success" onclick="app.addRandomFighters()" style="margin-right:8px;">🎲 ADD RANDOM</button>
-              <button class="danger" onclick="app.state.mySelected = []; app.render();">❌ CLEAR</button>
+              <button class="success" onclick="app.addRandomFighters()" style="margin-right:8px;">ADD RANDOM</button>
+              <button class="danger" onclick="app.state.mySelected = []; app.render();">CLEAR</button>
             ` : ''}
           </div>
 
@@ -1000,8 +859,8 @@
                 </tbody>
               </table>
               
-              <button class="toxic" onclick="app.addRandomTactics()" style="margin-right:8px;">🎲 ADD RANDOM</button>
-              <button class="danger" onclick="app.state.tacticIds = []; app.render();">❌ CLEAR</button>
+              <button class="toxic" onclick="app.addRandomTactics()" style="margin-right:8px;">ADD RANDOM</button>
+              <button class="danger" onclick="app.state.tacticIds = []; app.render();">CLEAR</button>
             ` : ''}
           </div>
 
@@ -1043,8 +902,8 @@
                   </tbody>
                 </table>
                 
-                <button class="success" onclick="app.addRandomHires()" style="margin-right:8px;">🎲 ADD RANDOM</button>
-                <button class="danger" onclick="app.state.selectedHireFighterIds = []; app.render();">❌ CLEAR</button>
+                <button class="success" onclick="app.addRandomHires()" style="margin-right:8px;">ADD RANDOM</button>
+                <button class="danger" onclick="app.state.selectedHireFighterIds = []; app.render();">CLEAR</button>
               `;
             })() : ''}
           </div>
@@ -1150,13 +1009,13 @@
                     </div>
                     
                     <button class="${t.ooa ? 'success' : 'danger'}" onclick="app.toggleOoA('${f.key}')" style="margin-right:8px;margin-top:8px;">
-                      ${t.ooa ? '✓ REVIVE' : '💀 MARK OOA'}
+                      ${t.ooa ? '✓ REVIVE' : 'MARK OOA'}
                     </button>
                     <button class="danger" onclick="app.clearLog('${f.key}')" style="margin-top:8px;">CLEAR LOG</button>
                     
                     <div class="log">
                       ${t.xpLog.map(e => `<div class="log-entry">${e.note} (+${e.xp} XP)</div>`).join('')}
-                      ${t.injuryNotes.map(n => `<div class="log-entry" style="color:${t.ooa?'#fafaf5':'#ff3838'};">🩸 ${n}</div>`).join('')}
+                      ${t.injuryNotes.map(n => `<div class="log-entry" style="color:${t.ooa?'#fafaf5':'#ff3838'};">${n}</div>`).join('')}
                       ${t.xpLog.length === 0 && t.injuryNotes.length === 0 ? '<div class="log-entry">No events yet</div>' : ''}
                     </div>
                   </div>
@@ -1171,21 +1030,21 @@
             <h2>D66 LASTING INJURY TABLE</h2>
             <table style="font-size:12px;">
               <thead>
-                <tr><th>D66</th><th>Result</th></tr>
+                <tr><th width="20%">D66</th><th>Result</th></tr>
               </thead>
               <tbody>
-                <tr><td style="font-weight:900;background:#d94f2e;color:#fafaf5;">11-26</td><td>Out Cold: Miss next game</td></tr>
-                <tr><td style="font-weight:900;background:#d94f2e;color:#fafaf5;">31-35</td><td>Convalescence: Miss D3 games</td></tr>
-                <tr><td style="font-weight:900;background:#d94f2e;color:#fafaf5;">36</td><td>Humiliated: -1 XP</td></tr>
-                <tr><td style="font-weight:900;background:#d94f2e;color:#fafaf5;">41-45</td><td>Head Injury: -1 Intelligence</td></tr>
-                <tr><td style="font-weight:900;background:#d94f2e;color:#fafaf5;">46</td><td>Eye Injury: -1 BS</td></tr>
-                <tr><td style="font-weight:900;background:#d94f2e;color:#fafaf5;">51</td><td>Hand Injury: -1 WS</td></tr>
-                <tr><td style="font-weight:900;background:#d94f2e;color:#fafaf5;">52-53</td><td>Hobbled: -1 Movement</td></tr>
-                <tr><td style="font-weight:900;background:#d94f2e;color:#fafaf5;">54</td><td>Spinal Injury: -1 Strength</td></tr>
-                <tr><td style="font-weight:900;background:#d94f2e;color:#fafaf5;">55</td><td>Enfeebled: -1 Toughness</td></tr>
-                <tr><td style="font-weight:900;background:#d94f2e;color:#fafaf5;">56</td><td>Partially Deafened: -1 Cool/Willpower</td></tr>
-                <tr><td style="font-weight:900;background:#d94f2e;color:#fafaf5;">61-65</td><td>Multiple Injuries: Roll twice</td></tr>
-                <tr><td style="font-weight:900;background:#d94f2e;color:#fafaf5;">66</td><td>Memorable Death: Remove from roster</td></tr>
+                <tr><td width="20%" style="font-weight:900;background:#d94f2e;color:#fafaf5;">11-26</td><td>Out Cold: Miss next game</td></tr>
+                <tr><td width="20%" style="font-weight:900;background:#d94f2e;color:#fafaf5;">31-35</td><td>Convalescence: Miss D3 games</td></tr>
+                <tr><td width="20%" style="font-weight:900;background:#d94f2e;color:#fafaf5;">36</td><td>Humiliated: -1 XP</td></tr>
+                <tr><td width="20%" style="font-weight:900;background:#d94f2e;color:#fafaf5;">41-45</td><td>Head Injury: -1 Intelligence</td></tr>
+                <tr><td width="20%" style="font-weight:900;background:#d94f2e;color:#fafaf5;">46</td><td>Eye Injury: -1 BS</td></tr>
+                <tr><td width="20%" style="font-weight:900;background:#d94f2e;color:#fafaf5;">51</td><td>Hand Injury: -1 WS</td></tr>
+                <tr><td width="20%" style="font-weight:900;background:#d94f2e;color:#fafaf5;">52-53</td><td>Hobbled: -1 Movement</td></tr>
+                <tr><td width="20%" style="font-weight:900;background:#d94f2e;color:#fafaf5;">54</td><td>Spinal Injury: -1 Strength</td></tr>
+                <tr><td width="20%" style="font-weight:900;background:#d94f2e;color:#fafaf5;">55</td><td>Enfeebled: -1 Toughness</td></tr>
+                <tr><td width="20%" style="font-weight:900;background:#d94f2e;color:#fafaf5;">56</td><td>Partially Deafened: -1 Cool/Willpower</td></tr>
+                <tr><td width="20%" style="font-weight:900;background:#d94f2e;color:#fafaf5;">61-65</td><td>Multiple Injuries: Roll twice</td></tr>
+                <tr><td width="20%" style="font-weight:900;background:#d94f2e;color:#fafaf5;">66</td><td>Memorable Death: Remove from roster</td></tr>
               </tbody>
             </table>
           </div>
@@ -1199,9 +1058,8 @@
         
         const html = `
           <div class="section">
-            <h2>📋 BATTLE REPORT</h2>
-            <button class="success" style="margin-right:8px;">📝 GENERATE</button>
-            <button onclick="navigator.clipboard.writeText(document.getElementById('reportText').value).then(() => alert('Report copied!'));">📋 COPY</button>
+            <h2>BATTLE REPORT</h2>
+            <button onclick="navigator.clipboard.writeText(document.getElementById('reportText').value).then(() => alert('Report copied!'));">COPY</button>
             <textarea id="reportText" rows="30" style="width:100%;padding:10px;border:4px solid #0a0a0a;background:#fafaf5;font-family:monospace;font-size:14px;margin-top:12px;box-shadow:3px 3px 0 #0a0a0a;" readonly>${report}</textarea>
           </div>
         `;
@@ -1212,7 +1070,7 @@
       renderCheatSheet() {
         const html = `
           <div class="section">
-            <h2>📖 PHASE SEQUENCE</h2>
+            <h2>PHASE SEQUENCE</h2>
             <ol style="line-height:2;">
               <li><strong>Priority:</strong> Roll off (highest wins)</li>
               <li><strong>Activation:</strong> Alternate activating fighters</li>
@@ -1269,7 +1127,7 @@
           </div>
 
           <div class="section">
-            <h2>🏆 EXPERIENCE</h2>
+            <h2>EXPERIENCE</h2>
             <table>
               <thead>
                 <tr><th>Achievement</th><th>XP</th></tr>

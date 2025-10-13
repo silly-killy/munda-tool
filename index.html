@@ -380,12 +380,7 @@
 <body>
   <!-- HEADER -->
   <header>
-    <h1>⚡ NECROMUNDA STEEL TRACKER ⚡</h1>
-    <div class="header-actions">
-      <button onclick="app.save()">💾 SAVE</button>
-      <button class="success" onclick="app.load()">📂 LOAD</button>
-      <button class="danger" onclick="app.reset()">🔥 RESET</button>
-    </div>
+    <h1>Killy's Munda World <button class="danger" onclick="app.reset()">🔥 RESET</button> </h1>
   </header>
 
   <!-- TABS -->
@@ -620,7 +615,6 @@
           try {
             this.state = JSON.parse(saved);
             this.render();
-            alert('Loaded!');
           } catch (e) {
             console.error('Failed to load', e);
           }
@@ -918,7 +912,7 @@
         const html = `
           <!-- SCENARIO -->
           <div class="section">
-            <h2>📜 SCENARIO</h2>
+            <h2>SCENARIO</h2>
             <label>Select Scenario:</label>
             <select onchange="app.state.scenarioId = this.value || null; app.render();">
               <option value="">-- Select Scenario --</option>
@@ -930,7 +924,7 @@
 
           <!-- MY GANG -->
           <div class="section">
-            <h2>💀 MY GANG</h2>
+            <h2>MY GANG</h2>
             <label>Select Gang:</label>
             <select onchange="app.state.myGangId = this.value || null; app.state.mySelected = []; app.render();">
               <option value="">-- Select Gang --</option>
@@ -966,7 +960,7 @@
 
           <!-- OPPONENTS -->
           <div class="section">
-            <h2>⚔️ OPPONENT GANGS</h2>
+            <h2>OPPONENT GANGS</h2>
             ${DATA.gangs.map(g => `
               <label class="checkbox-label">
                 <input type="checkbox" ${this.state.oppGangIds.includes(g.id) ? 'checked' : ''} onchange="app.toggleOpponent('${g.id}')">
@@ -977,7 +971,7 @@
 
           <!-- TACTICS -->
           <div class="section">
-            <h2>🎯 TACTICS</h2>
+            <h2>TACTICS</h2>
             <label>Select Decks:</label>
             ${DATA.tactics.decks.map(d => `
               <label class="checkbox-label">
@@ -1013,7 +1007,7 @@
 
           <!-- HIRES -->
           <div class="section">
-            <h2>💰 BOUNTY HUNTERS & HIRED GUNS</h2>
+            <h2>BOUNTY HUNTERS & HIRED GUNS</h2>
             <label>Enable Pools:</label>
             ${DATA.hires.pools.map(p => `
               <label class="checkbox-label">
@@ -1065,7 +1059,7 @@
         let html = `
           <!-- TACTICS IN PLAY -->
           <div class="tactics-panel">
-            <h3>🎯 TACTICS IN PLAY</h3>
+            <h3>TACTICS IN PLAY</h3>
             <div>
               ${this.state.tacticIds.length > 0 ? this.state.tacticIds.map(tid => {
                 const c = DATA.tactics.decks.flatMap(d => d.cards).find(x => x.id === tid);
@@ -1174,7 +1168,7 @@
         
         html += `
           <div class="section">
-            <h2>💥 D66 LASTING INJURY TABLE</h2>
+            <h2>D66 LASTING INJURY TABLE</h2>
             <table style="font-size:12px;">
               <thead>
                 <tr><th>D66</th><th>Result</th></tr>
@@ -1228,7 +1222,7 @@
           </div>
 
           <div class="section">
-            <h2>🎯 ACTIONS</h2>
+            <h2>ACTIONS</h2>
             <table>
               <thead>
                 <tr><th>Action</th><th>Effect</th></tr>
@@ -1245,7 +1239,7 @@
           </div>
 
           <div class="section">
-            <h2>🎲 HIT MODIFIERS</h2>
+            <h2>HIT MODIFIERS</h2>
             <table>
               <thead>
                 <tr><th>Situation</th><th>Modifier</th></tr>
@@ -1261,7 +1255,7 @@
           </div>
 
           <div class="section">
-            <h2>💥 INJURY ROLL</h2>
+            <h2>INJURY ROLL</h2>
             <table>
               <thead>
                 <tr><th>Roll</th><th>Result</th></tr>

@@ -147,7 +147,7 @@
     }
     
     /* === FORM ELEMENTS === */
-    select, input[type="number"], textarea {
+    select, input[type="number"],input[type="text"], textarea {
       width: 100%;
       padding: 10px;
       border: 4px solid var(--black);
@@ -343,6 +343,12 @@
       font-weight: 900;
       text-transform: uppercase;
     }
+
+    .tactics-panel .chip {
+      color: var(--purple);
+      background: var(--yellow);
+      font-weight: 800;
+    }
     
     /* === GRID === */
     .button-grid {
@@ -498,12 +504,27 @@
 
       openModal(title, body) {
         document.getElementById('modal-title').textContent = title;
-        document.getElementById('modal-body').innerHTML = decodeURIComponent(body);
+        document.getElementById('modal-body').innerHTML = atob(body);
         document.getElementById('modal').classList.add('active');
       },
 
       closeModal() {
         document.getElementById('modal').classList.remove('active');
+      },
+
+      generateBattleOutcome() {
+        let creds = document.getElementById('creditsEarned').value || 0;
+        let rep = document.getElementById('repEarned').value || 0;
+        let resources = document.getElementById('resources').value || 0;
+        let victoryCheckbox = document.getElementById('resources').checked || false;
+        let victory = 'Defeat'
+        if (victoryCheckbox) { victory = 'Victory'}
+
+        return document.getElementById('reportText').value +`\n---BATTLE OUTCOME---
+Result: ${victory}
+Credits: ${creds}
+Reputation: ${rep}
+Resources: ${resources}`
       },
 
       toggleFighter(id) {
@@ -660,7 +681,7 @@
           `).join('')}
         `;
 
-        this.openModal('Out of Action', encodeURIComponent(body));
+        this.openModal('Out of Action', btoa(body));
       },
 
       recordOoA(key, name, role) {
@@ -670,14 +691,22 @@
         this.closeModal();
       },
 
+      
+
       generateReport() {
         const gang = DATA.gangs.find(g => g.id === this.state.myGangId);
         const scenario = DATA.scenarios.find(s => s.id === this.state.scenarioId);
         
+        // Get battle outcome values
+        const creditsEarned = document.getElementById('creditsEarned')?.value || 0;
+        const repEarned = document.getElementById('repEarned')?.value || 0;
+        const resources = document.getElementById('resources')?.value || '';
+        const won = document.getElementById('won')?.checked || false;
+
         let report = '=== NECROMUNDA BATTLE REPORT ===\n\n';
-        
+
         if (scenario) {
-          report += `SCENARIO: ${scenario.name}\n${scenario.text}\n\n`;
+          report += `SCENARIO: ${scenario.name}\n\n`;
         }
         
         if (gang) {
@@ -700,7 +729,7 @@
             t.injuryNotes.forEach(n => report += `  - ${n}\n`);
             report += '\n';
           });
-        }
+        };
         
         if (this.state.selectedHireFighterIds.length > 0) {
           report += 'HIRED GUNS:\n\n';
@@ -766,7 +795,7 @@
               ${DATA.scenarios.map(s => `<option value="${s.id}" ${s.id === this.state.scenarioId ? 'selected' : ''}>${s.name}</option>`).join('')}
             </select>
             <button onclick="app.state.scenarioId = DATA.scenarios[Math.floor(Math.random()*DATA.scenarios.length)].id; app.render();" style="margin-top:8px;margin-right:8px;">RANDOM</button>
-            <button class="secondary" onclick="app.openModal('${scenario?.name || ''}', '<p>${encodeURIComponent(scenario?.text) || ''}</p>')" style="margin-top:8px;">DETAILS</button>
+            <button class="secondary" onclick="app.openModal('${scenario?.name || ''}', '${btoa(scenario?.text) || ''}')" style="margin-top:8px;">DETAILS</button>
             <table style="font-size:12px;">
               <thead>
                 <tr><th width="20%">2D6</th><th>Result</th></tr>
@@ -853,7 +882,7 @@
                         <td><input type="checkbox" ${this.state.tacticIds.includes(c.id) ? 'checked' : ''} onchange="app.toggleTactic('${c.id}')"></td>
                         <td>${c.name}</td>
                         <td>${c.deckName}</td>
-                        <td><button onclick="app.openModal('${c.name}', '<p>${encodeURIComponent(c.text)}</p>')" style="padding:4px 8px;font-size:12px;">VIEW</button></td>
+                        <td><button onclick="app.openModal('${c.name}', '${btoa(c.text)}')" style="padding:4px 8px;font-size:12px;">VIEW</button></td>
                       </tr>
                     `).join('')}
                 </tbody>
@@ -862,50 +891,6 @@
               <button class="toxic" onclick="app.addRandomTactics()" style="margin-right:8px;">ADD RANDOM</button>
               <button class="danger" onclick="app.state.tacticIds = []; app.render();">CLEAR</button>
             ` : ''}
-          </div>
-
-          <!-- HIRES -->
-          <div class="section">
-            <h2>BOUNTY HUNTERS & HIRED GUNS</h2>
-            <label>Enable Pools:</label>
-            ${DATA.hires.pools.map(p => `
-              <label class="checkbox-label">
-                <input type="checkbox" ${this.state.selectedHirePoolIds.includes(p.id) ? 'checked' : ''} onchange="app.toggleHirePool('${p.id}')">
-                <strong>${p.name}</strong>
-              </label>
-            `).join('')}
-            
-            ${this.state.selectedHirePoolIds.length > 0 ? (() => {
-              const pools = DATA.hires.pools.filter(p => this.state.selectedHirePoolIds.includes(p.id));
-              const allHires = pools.flatMap(p => p.fighters.map(f => ({...f, poolId: p.id, poolName: p.name, fid: `${p.id}_${f.id}`})));
-              
-              return `
-                <div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;">
-                  <span class="chip">Hires: ${this.state.selectedHireFighterIds.length}</span>
-                  <span class="chip">Rating: ${this.state.selectedHireFighterIds.reduce((sum,id) => sum+(allHires.find(f=>f.fid===id)?.rating||0),0)}</span>
-                </div>
-                
-                <table>
-                  <thead>
-                    <tr><th style="width:12%">Select</th><th style="width:30%">Name</th><th style="width:20%">Role</th><th style="width:18%">Rating</th><th style="width:20%">Pool</th></tr>
-                  </thead>
-                  <tbody>
-                    ${allHires.map(f => `
-                      <tr>
-                        <td><input type="checkbox" ${this.state.selectedHireFighterIds.includes(f.fid) ? 'checked' : ''} onchange="app.toggleHire('${f.fid}')"></td>
-                        <td>${f.name}</td>
-                        <td>${f.role}</td>
-                        <td>${f.rating}</td>
-                        <td>${f.poolName}</td>
-                      </tr>
-                    `).join('')}
-                  </tbody>
-                </table>
-                
-                <button class="success" onclick="app.addRandomHires()" style="margin-right:8px;">ADD RANDOM</button>
-                <button class="danger" onclick="app.state.selectedHireFighterIds = []; app.render();">CLEAR</button>
-              `;
-            })() : ''}
           </div>
         `;
         
@@ -922,7 +907,7 @@
             <div>
               ${this.state.tacticIds.length > 0 ? this.state.tacticIds.map(tid => {
                 const c = DATA.tactics.decks.flatMap(d => d.cards).find(x => x.id === tid);
-                return c ? `<span class="chip" style="cursor:pointer;" onclick="app.openModal('${c.name}', '<p>${encodeURIComponent(c.text)}</p>')">${c.name}</span>` : '';
+                return c ? `<span class="chip" style="cursor:pointer;" onclick="app.openModal('${c.name}', '${btoa(c.text)}')">${c.name}</span>` : '';
               }).join('') : '<span class="chip">None selected</span>'}
             </div>
           </div>
@@ -1001,7 +986,7 @@
                     <input type="number" value="${t.misc}" onchange="app.setMiscXP('${f.key}', this.value); app.render();" style="width:100%;padding:10px;border:4px solid #0a0a0a;background:#fafaf5;font-family:inherit;font-size:14px;margin-bottom:8px;box-shadow:3px 3px 0 #0a0a0a;">
                     
                     <div style="margin:12px 0;">
-                      <label style="display:block;font-weight:700;text-transform:uppercase;">Add Serious Injury:</label>
+                      <label style="display:block;font-weight:700;text-transform:uppercase;">Add Lasting Injury:</label>
                       <select id="injury_${f.key}" style="width:100%;padding:10px;border:4px solid #0a0a0a;background:#fafaf5;font-family:inherit;font-size:14px;margin-bottom:8px;box-shadow:3px 3px 0 #0a0a0a;">
                         ${DATA.injuries.map(inj => `<option value="${inj}">${inj}</option>`).join('')}
                       </select>
@@ -1055,11 +1040,40 @@
 
       renderReport() {
         const report = this.generateReport();
+
+        const tempBody = `<!-- Battle Outcome Inputs -->
+          <div class="section" style="background: var(--purple);">
+            <h2 style="color: var(--yellow);">BATTLE OUTCOME</h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 12px;">
+              <div>
+                <label style="color: var(--white);">Credits Earned:</label>
+                <input type="number" id="creditsEarned" value="0" style="width: 100%;">
+              </div>
+              
+              <div>
+                <label style="color: var(--white);">Rep Earned:</label>
+                <input type="number" id="repEarned" value="0" style="width: 100%;">
+              </div>
+
+              <div>
+                <label style="color: var(--white);">Resources:</label>
+                <input type="text" id="resources" placeholder="e.g., Captured territory, found loot..." style="width: 100%;">
+              </div>
+            </div>
+            
+            <label class="checkbox-label" style="background: rgba(255,255,255,0.1); color: var(--white);">
+              <input type="checkbox" id="won">
+              <strong style="font-size: 16px;">VICTORY</strong>
+            </label>
+
+            <button onclick="navigator.clipboard.writeText(app.generateBattleOutcome()).then(() => alert('Report copied!'))">Copy</button>
+          </div>`
         
         const html = `
           <div class="section">
             <h2>BATTLE REPORT</h2>
-            <button onclick="navigator.clipboard.writeText(document.getElementById('reportText').value).then(() => alert('Report copied!'));">COPY</button>
+            <button onclick="app.openModal('Wrap up', '${btoa(tempBody)}')">Generate Report</button>
             <textarea id="reportText" rows="30" style="width:100%;padding:10px;border:4px solid #0a0a0a;background:#fafaf5;font-family:monospace;font-size:14px;margin-top:12px;box-shadow:3px 3px 0 #0a0a0a;" readonly>${report}</textarea>
           </div>
         `;
@@ -1075,7 +1089,7 @@
               <li><strong>Priority:</strong> Roll off (highest wins)</li>
               <li><strong>Activation:</strong> Alternate activating fighters</li>
               <li><strong>End Phase:</strong> Rally, remove blast markers, reset status</li>
-              <li><strong>Recovery:</strong> Roll for Seriously Injured fighters</li>
+              <li><strong>Recovery:</strong> Roll for Lasting Injured fighters</li>
             </ol>
           </div>
 

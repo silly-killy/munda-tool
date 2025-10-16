@@ -703,7 +703,7 @@ Resources: ${resources}`
         const resources = document.getElementById('resources')?.value || '';
         const won = document.getElementById('won')?.checked || false;
 
-        let report = '=== NECROMUNDA BATTLE REPORT ===\n\n';
+        let report = '## NECROMUNDA BATTLE REPORT\n\n';
 
         if (scenario) {
           report += `SCENARIO: ${scenario.name}\n\n`;
@@ -847,7 +847,7 @@ Resources: ${resources}`
           </div>
 
           <!-- OPPONENTS -->
-          <div class="section">
+          <div class="section" style="background: var(--red)">
             <h2>OPPONENT GANGS</h2>
             ${DATA.gangs.map(g => `
               <label class="checkbox-label">
@@ -858,7 +858,7 @@ Resources: ${resources}`
           </div>
 
           <!-- TACTICS -->
-          <div class="section">
+          <div class="section" style="background: var(--green)">
             <h2>TACTICS</h2>
             <label>Select Decks:</label>
             ${DATA.tactics.decks.map(d => `
@@ -879,7 +879,7 @@ Resources: ${resources}`
                     .flatMap(d => d.cards.map(c => ({...c, deckName: d.name})))
                     .map(c => `
                       <tr>
-                        <td><input type="checkbox" ${this.state.tacticIds.includes(c.id) ? 'checked' : ''} onchange="app.toggleTactic('${c.id}')"></td>
+                        <td style="width:15%" ><input type="checkbox" ${this.state.tacticIds.includes(c.id) ? 'checked' : ''} onchange="app.toggleTactic('${c.id}')"></td>
                         <td>${c.name}</td>
                         <td>${c.deckName}</td>
                         <td><button onclick="app.openModal('${c.name}', '${btoa(c.text)}')" style="padding:4px 8px;font-size:12px;">VIEW</button></td>
@@ -1085,27 +1085,45 @@ Resources: ${resources}`
         const html = `
           <div class="section">
             <h2>PHASE SEQUENCE</h2>
-            <ol style="line-height:2;">
-              <li><strong>Priority:</strong> Roll off (highest wins)</li>
-              <li><strong>Activation:</strong> Alternate activating fighters</li>
-              <li><strong>End Phase:</strong> Rally, remove blast markers, reset status</li>
-              <li><strong>Recovery:</strong> Roll for Lasting Injured fighters</li>
-            </ol>
+            <table>
+              <thead>
+                <tr><th style="width=20%">Phase</th><th>Effect</th></tr>
+              </thead>
+              <tbody>
+                <tr><td style="width=20%">Priority</td><td>Roll for priority; Tie surrenders priority to player who did not have it last round.</td></tr>
+                <tr><td style="width=20%">Action</td><td>Alternate turns activating fighters.</td></tr>
+                <tr><td style="width=20%">End Phase</td><td>Bottle Checks, Fleeing the Battlefield, Recover & Restart, and Rally Tests </td></tr>
+              </tbody>
+            </table>
           </div>
 
           <div class="section">
             <h2>ACTIONS</h2>
+            <p><b style="background: var(--cyan)">Simple</b>(More than once per activations) <br/><b style="background: var(--green)">Basic</b>(Once per activation) <br/><b style="background: var(--red)">Double</b>(Consumes 2 actions; Also once per activation)</p>
             <table>
               <thead>
                 <tr><th>Action</th><th>Effect</th></tr>
               </thead>
               <tbody>
-                <tr><td>Move (Simple)</td><td>Move up to M"</td></tr>
-                <tr><td>Charge (Double)</td><td>Move + engage enemy</td></tr>
-                <tr><td>Shoot (Basic/Double)</td><td>Make ranged attack</td></tr>
-                <tr><td>Fight (Basic)</td><td>Make close combat attacks</td></tr>
-                <tr><td>Take Cover (Basic)</td><td>+1 to save until activation</td></tr>
-                <tr><td>Coup de Grace (Simple)</td><td>Auto-wound Seriously Injured</td></tr>
+                <tr>
+                  <td style="width:20%; background: var(--cyan)">Move</td>
+                  <td>
+                    <ul style="padding-left: 10px;">
+                      <li>Move a distance up to their Movement characteristic.</li>
+                      <li>Climb vertically upwards or downwards.</li>
+                      <li>Cross any gap between two platforms that is no wider than their base.</li>
+                      <li>Attempt to leap across a bigger gap provided that they have enough movement left to do so.</li>
+                      <li>Attempt to jump down to a level below.</li>
+                    </ul>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="width:20%; background: var(--red)">Charge</td>
+                  <td>
+                    The fighter moves as if making a Move (Simple) action, but adds D3" to the distance they can move. A charging fighter can move to within 1" of one or more enemy fighters that are Standing and either Active or Engaged, or that are Prone and either Pinned or Seriously Injured, but if they do move to within 1" they must have sufficient movement to get into base to base contact with at least one enemy fighter. If they do not have sufficient movement to get into base to base contact, they must stop 1" away. If they are Standing and Engaged at the end of this move, they must immediately make a free Fight (Basic) action. If they are Standing and Engaged with a Prone and Pinned fighter at the end of this move, that fighter changes their status to Standing and Active.
+                  </td>
+                </tr>
+
               </tbody>
             </table>
           </div>

@@ -34,15 +34,162 @@ const DATA = {
   tactics: {
     decks: [
       {
+        id: "John_deck",
+        name: "John's Deck",
+        cards: [
+          {
+            id:"t_click",
+            name:"...Click",
+            text:"<b>Play this gang tactic after an enemy model has completed a Shoot (Basic) action after fully resolving any hits.</b><br/><br/>\
+            The weapon that was used to make the Shoot (Basic) action immediately runs Out of Ammo as if it had failed an Ammo test."
+          },
+          {
+            id:"t_b_and_switch",
+            name:"Bait and Switch",
+            text:"<b>Play this card instead of activating a fighter.</b><br/><br/>\
+            Take a Ready marker from any of your fighters and place it on a fighter who has already activated this round."
+          },
+          {
+            id:"t_bd_champ",
+            name:"Blood-Drenched Champion",
+            text:"<b>Play this card instead of activating a fighter.</b><br/><br/>\
+            An enemy fighter of your choice that is visible to your leader must pass a Nerve test, subtracting 2 from the result, or become Broken."
+          },
+          {
+            id:"t_blust",
+            name:"Bloodlust",
+            text:"<b>Play this card when a friendly fighter makes a Charge (Double) action.</b><br/><br/>\
+            Choose a friendly visible fighter with a Ready marker within 8\" of the charging fighter. Once the charging fighter's Charge is fully resolved, the chosen fighter may immediately make a Charge (Double) action. Remove their Ready marker once this is Resolved."
+          },
+          {
+            id:"t_dirty_tactics",
+            name:"Dirty Tactics",
+            text:"<b>Play this gang tactic at the end of a friendly fighter's activation.</b><br/><br/>\
+            Immediately activate another Ready friendly fighter anywhere on the battlefield."
+          },
+          {
+            id:"t_fight_another_day",
+            name:"Fight Another Day",
+            text:"<b>Play this gang tactic when a friendly fighter is taken Out of Action.</b><br/><br/>\
+            Do not make a Lasting Injury roll against the fighter. Instead, treat the fighter as being Out Cold, as if a roll of 12-26 on the Lasting Injury table had been made against them."
+          },
+          {
+            id:"t_rat_warren",
+            name:"Rat Warren",
+            text:"<b>Play this gang tactic after your opponent activates one of their fighters.</b><br/><br/>\
+            If the fighter they have just activated does not have line of sight to any friendly fighters, they must make an Intelligence check. If this check is failed, you may place that fighter anywhere within 6\" of their current location. You may not place that fighter within 3\" of any of your fighters."
+          },
+          {
+            id:"t_rise_f_ashes",
+            name:"Rise From the Ashes",
+            text:"<b>Play this gang tactic at the start of any round, before players Roll of Priority.</b><br/><br/>\
+            For the duration of this round and the following two rounds, your gang automatically passes all Bottle tests."
+          },
+          {
+            id:"t_s_tinnels",
+            name:"Service Tunnels",
+            text:"<b>Play when deploying your gang.</b><br/><br/>\
+            One fighter chosen by you from your starting Crew gains the Infiltrate skill for the duration of this battle and may be deployed accordingly."
+          },
+          {
+            id:"t_sum_s",
+            name:"Sump Slump",
+            text:"<b>Play at the start of any turn.</b><br/><br/>\
+            Immediately remove D3 Barricades of your choice from anywhere on the board."
+          },
+          {
+            id:"t_tainted_meat",
+            name:"Tainted Meat",
+            text:"<b>Play this card immediately after it has been drawn during Gang Tactics & Bonuses of the pre-battle sequence.</b><br/><br/>\
+            Nominate one fighter from your opponent's starting Crew. That fighter starts this battle with one Flesh Wound."
+          },
+          {
+            id:"t_wyd_coin",
+            name:"Wyrd Occurrence",
+            text:"<b>Play this gang tactic when activating a friendly fighter.</b><br/><br/>\
+            This fighter immediately performs one of the following Wyrd Power actions (without the need to make a Willpower check). Their activation then ends: <br/>\
+            Chronomancy - Freeze Time (Double), <br/>\
+            Divination - Misfortune (Basic), <br/>\
+            Pyromancy - Molten Bolt (Basic)."
+          }
+        ]
+      },
+      {
         id: "connor_deck",
         name: "Connor's Deck",
         cards: [
-          {id:"t_overwatch",name:"Overwatch",text:"Reaction. When an enemy fighter moves within LoS, interrupt and make a ranged attack at -1 to hit."},
-          {id:"t_ambush",name:"Ambush",text:"Play at start of round. One fighter can make a free Shoot action before Priority roll."},
-          {id:"t_evade",name:"Evade",text:"Reaction. When targeted by ranged attack, roll Initiative. Success: attacker suffers -1 to hit."},
-          {id:"t_medicae",name:"Medicae",text:"Action. Remove a Flesh Wound from a friendly fighter within 3\"."},
-          {id:"t_smoke",name:"Smoke Grenades",text:"Action. Place 5\" smoke template within 6\". Blocks LoS until End Phase."},
-          {id:"t_retreat",name:"Tactical Withdrawal",text:"Reaction. When bottled, one fighter may make free Move action toward table edge."}
+          {
+            id:"t_click2",
+            name:"...Click",
+            text:"<b>Play this gang tactic after an enemy model has completed a Shoot (Basic) action after fully resolving any hits.</b><br/><br/>\
+            The weapon that was used to make the Shoot (Basic) action immediately runs Out of Ammo as if it had failed an Ammo test."
+          },
+          {
+            id:"t_cloying_darkness",
+            name:"Cloying Darkness",
+            text:"<b>Play this gang tactic when an enemy fighter performs a Fight (Basic) action.</b><br/><br/>\
+            Darkness swirls around the enemy fighter, seeming to grasp at their weapons. Apply a -D3 modifier to the fighter's Hit roll."
+          },
+          {
+            id:"t_dancing_shadows",
+            name:"Dancing Shadows",
+            text:"<b>Play this card when an enemy fighter makes a ranged attack.</b><br/><br/>\
+            The attacking enemy fighter must pass an Intelligence check. If they fail, the attack automatically misses and their activation ends."
+          },
+          {
+            id:"t_darkness_decends",
+            name:"Darkness Decends",
+            text:"<b>Play at the start of any round other than the first, after rolling for Priority.</b><br/><br/>\
+            At a pre-planned signal, the lights go out and the battlefield is plunged into darkness. For the remainder of the battle, the Pitch Black scenario rules are in effect. During each End phase, your opponent may roll a D6. On a 6, the Pitch Black rules are lifted and the lights come back on."
+          },
+          {
+            id:"t_disquieting_susurration",
+            name:"Disquieting Susurration",
+            text:"<b>Play this gang tactic when a friendly Delaque fighter fails their Willpower check to perform a Wyrd Power action.</b><br/><br/>\
+            You may immediately re-roll the failed Willpower check. However, you must accept the result of the second roll, even if it is worse than the first."
+          },
+          {
+            id:"t_faces_of_gloom",
+            name:"Faces of Gloom",
+            text:"<b>Play this gang tactic when an enemy fighter performs a Shoot (Basic) action.</b><br/><br/>\
+            Faces loom from the darkness of the underhive, making the fighter think they are surrounded by enemies. Apply a -D3 modifier to the fighter's Hit roll."
+          },
+          {
+            id:"t_fear_of_betrayal",
+            name:"Fear of Betrayal",
+            text:"<b>Play this card instead of activating a fighter.</b><br/><br/>\
+            An enemy fighter of your choice with a Ready marker must pass a Cool check or immediately make a Shoot (Basic) action against the closest visible fighter from their own gang, as if they were an enemy fighter. They then lose their Ready marker."
+          },
+          {
+            id:"t_mass_infiltration",
+            name:"Mass Infiltration",
+            text:"<b>Play this card during deployment.</b><br/><br/>\
+            Choose D3 fighters in your Crew. For the duration of this battle, these fighters gain the Infiltrate skill."
+          },
+          {
+            id:"t_over_here",
+            name:"Over Here...",
+            text:"<b>Play when an enemy model makes a Move (Simple) action.</b><br/><br/>\
+            Instead of moving normally, the chosen enemy fighter moves D6\" in a direction chosen by you, stopping if they come into contact with any terrain."
+          },
+          {
+            id:"t_shape_shifting",
+            name:"Shape Shifting",
+            text:"<b>Play this gang tactic when a friendly Delaque fighter becomes Seriously Injured.</b><br/><br/>\
+            Immediately remove the Seriously Injured fighter from the battlefield and replace them with another member of the gang that is not currently on the battlefield (i.e., a fighter that is not part of your starting Crew). Do not make a Lasting Injury roll against the Seriously injured fighter. Instead, they go straight into Recovery as if a roll of 31-45, Grievous Injury, had been made against them."
+          },
+          {
+            id:"t_shooting_at_shadows",
+            name:"Shooting at Shadows",
+            text:"<b>Play this gang tactic when a friendly Delaque fighter is hit by an enemy ranged attack.</b><br/><br/>\
+            Roll a D6. On a 2+, the hit has no effect against the chosen fighter. On a 1, they are affected as normal but this gang tactic is not discarded."
+          },
+          {
+            id:"t_snakes_in_the_dark",
+            name:"Snakes in the Dark",
+            text:"<b>Play this gang tactic at the start of the Deployment step of the pre-battle sequence, before any fighters have been deployed.</b><br/><br/>\
+            If the scenario requires you to deploy your gang first, you may redeploy any number of your fighters after your opponent has deployed their gang. In other words, you may remove any number of your fighters from the battlefield and deploy them again. Redeployed fighters must follow the deployment rules as determined by the scenario."
+          }
         ]
       },
       {
@@ -189,5 +336,15 @@ const DATA = {
   repEarned: 0,
   resources: '',
   won: false
-}
+},
+  actions: [
+    {
+      id: "a_move",
+      action: "Move",
+      type: "Simple",
+
+      
+    }
+
+]
 };

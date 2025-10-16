@@ -18,17 +18,44 @@ const DATA = {
     id: "the_drama_queens",
     name: "The Drama Queens",
     fighters: [
-      {id: "billy_shakes", "name": "Billy Shakes", "role": "Leader", "rating": 210},
-      {id: "iago", "name": "Iago", "role": "Champion", "rating": 160},
-      {id: "lear", "name": "Lear", "role": "Champion", "rating": 245},
-      {id: "hamlet", "name": "Hamlet", "role": "Specialist", "rating": 160},
-      {id: "mercutio", "name": "Mercutio", "role": "Ganger", "rating": 70},
-      {id: "horatio", "name": "Horatio", "role": "Ganger", "rating": 70},
-      {id: "macbeth", "name": "MacBeth", "role": "Juve", "rating": 50},
-      {id: "titania", "name": "Titania", "role": "Prospect", "rating": 80},
-      {id: "henry", "name": "Henry", "role": "Brute", "rating": 205}
-    ]
-}
+        {id: "billy_shakes", "name": "Billy Shakes", "role": "Leader", "rating": 210},
+        {id: "iago", "name": "Iago", "role": "Champion", "rating": 160},
+        {id: "lear", "name": "Lear", "role": "Champion", "rating": 245},
+        {id: "hamlet", "name": "Hamlet", "role": "Specialist", "rating": 160},
+        {id: "mercutio", "name": "Mercutio", "role": "Ganger", "rating": 70},
+        {id: "horatio", "name": "Horatio", "role": "Ganger", "rating": 70},
+        {id: "macbeth", "name": "MacBeth", "role": "Juve", "rating": 50},
+        {id: "titania", "name": "Titania", "role": "Prospect", "rating": 80},
+        {id: "henry", "name": "Henry", "role": "Brute", "rating": 205}
+      ]
+    },
+    {
+      id: "o_blocks",
+      name: "O Block",
+      fighters: [
+          {id: "oswitch", "name": "Oblock Switchyion", "role": "Leader", "rating": 330},
+          {id: "dtmil", "name": "DT Millz", "role": "Champion", "rating": 225},
+          {id: "vonin", "name": "Von Incarnate", "role": "Champion", "rating": 170},
+          {id: "nephe", "name": "Nephew", "role": "Ganger", "rating": 90},
+          {id: "luca", "name": "Luca Brasi", "role": "Ganger", "rating": 115},
+          {id: "47", "name": "47", "role": "Ganger", "rating": 100},
+          {id: "slid2", "name": "Mr Slide Two Times", "role": "Specialist", "rating": 125},
+          {id: "biggieche", "name": "Biggie Chee", "role": "Prospect", "rating": 95}
+        ]
+    },
+    {
+      id: "dhunt",
+      name: "Dark Hunters",
+      fighters: [
+          {id: "sal", "name": "Sally", "role": "Leader", "rating": 380},
+          {id: "mstr", "name": "Mysterious Stranger", "role": "Champion", "rating": 260},
+          {id: "Cainx", "name": "Cain Xavier", "role": "Ganger", "rating": 160},
+          {id: "delvol", "name": "Delius Voldus", "role": "Ganger", "rating": 115},
+          {id: "enokz", "name": "Enok the Zealot", "role": "Ganger", "rating": 125},
+          {id: "servit", "name": "Servitor Z-00", "role": "Ganger", "rating": 65},
+          {id: "fimalk", "name": "Fiori Malok", "role": "Champion", "rating": 145}
+        ]
+    }
 
   ],
   tactics: {

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NECROMUNDA | STEEL TRACKER</title>
+  <title>Killy's Munda World</title>
   <style>
     /* === RESET === */
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -899,7 +899,7 @@ Resources: ${resources}`
 
       renderBattle() {
         const gang = DATA.gangs.find(g => g.id === this.state.myGangId);
-        
+
         let html = `
           <!-- TACTICS IN PLAY -->
           <div class="tactics-panel">
@@ -909,6 +909,28 @@ Resources: ${resources}`
                 const c = DATA.tactics.decks.flatMap(d => d.cards).find(x => x.id === tid);
                 return c ? `<span class="chip" style="cursor:pointer;" onclick="app.openModal('${c.name}', '${btoa(c.text)}')">${c.name}</span>` : '';
               }).join('') : '<span class="chip">None selected</span>'}
+            </div>
+          </div>
+
+          <!-- KEYWORDS IN PLAY -->
+          <div class="tactics-panel" style="background: var(--green);">
+            <h3 style="color: var(--black);">KEYWORDS IN PLAY</h3>
+            <div>
+              ${gang && gang.keywords && gang.keywords.length > 0 ? gang.keywords.map(kwId => {
+                const kw = DATA.keywords[kwId];
+                return kw ? `<span class="chip" style="cursor:pointer;background:var(--black);color:var(--green);" onclick="app.openModal('${kw.name}', '${btoa(kw.definition)}')">${kw.name}</span>` : '';
+              }).join('') : '<span class="chip" style="background:var(--black);color:var(--green);">None available</span>'}
+            </div>
+          </div>
+
+          <!-- SETTLEMENTS -->
+          <div class="tactics-panel" style="background: var(--orange);">
+            <h3 style="color: var(--black);">SETTLEMENTS</h3>
+            <div>
+              ${gang && gang.settlements && gang.settlements.length > 0 ? gang.settlements.map(settId => {
+                const sett = DATA.settlements[settId];
+                return sett ? `<span class="chip" style="cursor:pointer;background:var(--rust);color:var(--white);" onclick="app.openModal('${sett.name}', '${btoa(sett.description)}')">${sett.name}</span>` : '';
+              }).join('') : '<span class="chip" style="background:var(--rust);color:var(--white);">None available</span>'}
             </div>
           </div>
         `;

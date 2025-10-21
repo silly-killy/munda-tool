@@ -540,7 +540,7 @@ Resources: ${resources}`
         const gang = DATA.gangs.find(g => g.id === this.state.myGangId);
         if (!gang) return;
         const n = parseInt(prompt('How many random fighters?', '3')) || 3;
-        const available = gang.fighters.filter(f => !this.state.mySelected.includes(f.id));
+        const available = gang.fighters.filter(f => !this.state.mySelected.includes(f.id) && f.role != 'Exotic Beast');
         for (let i = 0; i < n && available.length > 0; i++) {
           const idx = Math.floor(Math.random() * available.length);
           this.state.mySelected.push(available[idx].id);

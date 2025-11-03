@@ -55,11 +55,11 @@ const DATA = {
       keywords: ["infiltrate", "nerves_of_steel", "fearsome"],
       settlements: [],
       fighters: [
-          {id: "sal", "name": "Sally", "role": "Leader", "rating": 380},
+          {id: "sal", "name": "Sally", "role": "Leader", "rating": 385},
           {id: "mstr", "name": "Mysterious Stranger", "role": "Champion", "rating": 260},
-          {id: "Cainx", "name": "Cain Xavier", "role": "Ganger", "rating": 160},
-          {id: "delvol", "name": "Delius Voldus", "role": "Ganger", "rating": 115},
-          {id: "enokz", "name": "Enok the Zealot", "role": "Ganger", "rating": 125},
+          {id: "Cainx", "name": "Cain Xavier", "role": "Ganger", "rating": 135},
+          {id: "delvol", "name": "Delius Voldus", "role": "Ganger", "rating": 90},
+          {id: "enokz", "name": "Enok the Zealot", "role": "Ganger", "rating": 120},
           {id: "servit", "name": "Servitor Z-00", "role": "Ganger", "rating": 65},
           {id: "fimalk", "name": "Fiori Malok", "role": "Champion", "rating": 145}
         ]

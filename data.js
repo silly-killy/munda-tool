@@ -6,14 +6,13 @@ const DATA = {
     keywords: ["gang_hierarchy_leader", "plentiful"],
     settlements: [],
     fighters: [
-      {id: "ringleader", "name": "Ring Master", "role": "Leader", "rating": 260},
-      {id: "jester", "name": "Jester", "role": "Ganger", "rating": 90},
-      {id: "fireperformer", "name": "Fire Performer", "role": "Champion", "rating": 245},
-      {id: "strongman", "name": "The Strong Man", "role": "Champion", "rating": 175},
-      {id: "harlequin", "name": "Harlequin", "role": "Ganger", "rating": 95},
-      {id: "magician", "name": "The Magician", "role": "Ganger", "rating": 80},
-      {id: "freak", "name": "The FREAK", "role": "Brute", "rating": 210},
-      {id: "ricco", "name": "Ricco Nasty", "role": "Ganger", "rating": 80}
+      {id: "ringleader", "name": "Ring Master", "role": "Leader", "rating": 300},
+      {id: "homesless", "name": "Homeless Man", "role": "Ganger", "rating": 130},
+      {id: "fireperformer", "name": "Fire Performer", "role": "Champion", "rating": 240},
+      {id: "j3a", "name": "Jonny 3-Arms", "role": "Ganger", "rating": 90},
+      {id: "lmercu", "name": "Lady Mercury", "role": "Ganger", "rating": 90},
+      {id: "slug", "name": "Slug", "role": "Ganger", "rating": 145},
+      {id: "freak", "name": "The FREAK", "role": "Brute", "rating": 250}
       ]
     },
     {

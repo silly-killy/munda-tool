@@ -911,28 +911,6 @@ Resources: ${resources}`
               }).join('') : '<span class="chip">None selected</span>'}
             </div>
           </div>
-
-          <!-- KEYWORDS IN PLAY -->
-          <div class="tactics-panel" style="background: var(--green);">
-            <h3 style="color: var(--black);">KEYWORDS IN PLAY</h3>
-            <div>
-              ${gang && gang.keywords && gang.keywords.length > 0 ? gang.keywords.map(kwId => {
-                const kw = DATA.keywords[kwId];
-                return kw ? `<span class="chip" style="cursor:pointer;background:var(--black);color:var(--green);" onclick="app.openModal('${kw.name}', '${btoa(kw.definition)}')">${kw.name}</span>` : '';
-              }).join('') : '<span class="chip" style="background:var(--black);color:var(--green);">None available</span>'}
-            </div>
-          </div>
-
-          <!-- SETTLEMENTS -->
-          <div class="tactics-panel" style="background: var(--orange);">
-            <h3 style="color: var(--black);">SETTLEMENTS</h3>
-            <div>
-              ${gang && gang.settlements && gang.settlements.length > 0 ? gang.settlements.map(settId => {
-                const sett = DATA.settlements[settId];
-                return sett ? `<span class="chip" style="cursor:pointer;background:var(--rust);color:var(--white);" onclick="app.openModal('${sett.name}', '${btoa(sett.description)}')">${sett.name}</span>` : '';
-              }).join('') : '<span class="chip" style="background:var(--rust);color:var(--white);">None available</span>'}
-            </div>
-          </div>
         `;
         
         if (gang) {

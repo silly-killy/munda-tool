@@ -582,6 +582,84 @@ const DATA = {
         ]
       },
       {
+        id: "Matthews_deck",
+        name: "Matthew's Deck",
+        cards: [
+          {
+            id:"t_click3",
+            name:"...Click",
+            text:"<b>Play this gang tactic after an enemy model has completed a Shoot (Basic) action after fully resolving any hits.</b><br/><br/>\
+            The weapon that was used to make the Shoot (Basic) action immediately runs Out of Ammo as if it had failed an Ammo test."
+          },
+          {
+            id:"t_blood_money",
+            name:"Blood Money",
+            text:"<b>Play this card when an enemy Champion or Leader is taken Out of Action.</b><br/><br/>\
+            Your gang immediately adds a number of credits equal to half the Champion's or Leader's cost (rounding up) to its stash."
+          },
+          {
+            id:"t_crossfire",
+            name:"Crossfire",
+            text:"<b>Play this card when a fighter makes a ranged attack against a target who has already been shot at by a friendly fighter.</b><br/><br/>\
+            The hit roll succeeds automatically."
+          },
+          {
+            id:"t_point_blank_shot",
+            name:"Point-Blank Shot",
+            text:"<b>Play this card when a fighter makes a Fight action or a Charge action.</b><br/><br/>\
+            Pick one of the fighter's ranged weapons that does not have the Blast trait or Template trait. For the duration of this turn, that weapon can be used in close combat in the same way as a pistol."
+          },
+          {
+            id:"t_prop_prep_2",
+            name:"Proper Preparation",
+            text:"<b>Play this gang tactic before either player deploys their gang.</b><br/><br/>\
+            One friendly fighter's weapons all gain the Plentiful trait, unless they already have the Scarce trait in which case they lose the Scarce trait."
+          },
+          {
+            id:"t_reckless_charge",
+            name:"Reckless Charge",
+            text:"<b>Play this card when a fighter makes a Charge (Double) action.</b><br/><br/>\
+           The fighter counts as having rolled a 3 on the D3 to determine their maximum charge range."
+          },
+          {
+            id:"t_rejuve_stimm",
+            name:"Rejuve Stimm",
+            text:"<b>Play this card instead of activating a fighter.</b><br/><br/>\
+            Choose any friendly fighter who has suffered at least one Wound. This fighter immediately regains any lost Wounds."
+          },
+          {
+            id:"t_snapfire",
+            name:"Snap Fire",
+            text:"<b>Play this card after an enemy fighter completes an attack with a ranged weapon.</b><br/><br/>\
+            A readied fighter in your gang may immediately take a shot at the enemy fighter with a Pistol or Basic weapon. However, they must subtract 1 from the hit roll."
+          },
+          {
+            id:"t_reload",
+            name:"Reload!",
+            text:"<b>Play this gang tactic at the start of any End phase.</b><br/><br/>\
+            Every friendly model may perform an immediate free Reload (Simple) action."
+          },
+          {
+            id:"t_service_tinnels1",
+            name:"Service Tunnels",
+            text:"<b>Play when deploying your gang.</b><br/><br/>\
+            One fighter chosen by you from your starting Crew gains the Infiltrate skill for the duration of this battle and may be deployed accordingly."
+          },
+          {
+            id:"t_suppressing_fire",
+            name:"Suppressing Fire",
+            text:"<b>Play this card after a friendly model fails to hit with a Shoot (Basic) action.</b><br/><br/>\
+            The target of the Shoot (Basic) action is placed Prone and Pinned."
+          },
+          {
+            id:"t_whats_a_few_teeth11",
+            name:"Whats a Few Teeth",
+            text:"<b>Play this when a friendly fighter suffers a Flesh Wound.</b><br/><br/>\
+            The Flesh Wound is ignored. Any other effects of the injury still apply."
+          }
+        ]
+      },
+      {
         id: "underdog",
         name: "Underdog Deck",
         cards: [

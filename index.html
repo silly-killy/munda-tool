@@ -291,19 +291,21 @@
       display: none;
       align-items: center;
       justify-content: center;
+      color: white;
     }
     
     .modal.active { display: flex; }
     
     .modal-content {
-      background: var(--cyan);
-      border: 4px solid var(--black);
+      background: var(--black);
+      border: 4px solid white;
       padding: 24px;
       max-width: 600px;
       width: 100%;
       box-shadow: 10px 10px 0 var(--black);
       max-height: 90vh;
       overflow-y: auto;
+      font-weight: 600;
     }
     
     .modal-header {
@@ -323,9 +325,9 @@
     }
 
     #modal-body b {
-      color: var(--red);
-      font-weight: bolder;
-      font-size: 16px;
+      color: var(--rust);
+      font-weight: 900;
+      font-size: 18px;
     }
     
     /* === TACTICS PANEL === */

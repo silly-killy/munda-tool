@@ -736,6 +736,83 @@ const DATA = {
             Should the fighter suffer an injury without suffering a wound (for example, due to a weapon with the Gas trait), this gang tactic is immediately discarded."
           }
         ]
+      },{
+        id: "seths_deck",
+        name: "Seth's Deck",
+        cards: [
+          {
+            id:"t_click5",
+            name:"...Click",
+            text:"<b>Play this gang tactic after an enemy model has completed a Shoot (Basic) action after fully resolving any hits.</b><br/><br/>\
+            The weapon that was used to make the Shoot (Basic) action immediately runs Out of Ammo as if it had failed an Ammo test."
+          },
+          {
+            id:"t_dre_surge2",
+            name:"Adrenaline Surge",
+            text:"<b>Play this gang tactic when activating a friendly fighter.</b><br/><br/>\
+            The fighter may perform an additional action this activation."
+          },
+          {
+            id:"t_babds",
+            name:"Bait and Switch",
+            text:"<b>Play this card instead of activating a fighter.</b><br/><br/>\
+            Take a Ready marker from any of your fighters and place it on a fighter who has already activated this round."
+          },
+          {
+            id:"t_cfaith",
+            name:"Call the Faithful",
+            text:"<b>Play this card after both sides have deployed.</b><br/><br/>\
+            You may add an extra D3 fighters to your Crew (potentially exceeding the normal Crew size for the scenario). These fighters must be chosen randomly from any fighters not already included in your Crew."
+          },
+          {
+            id:"t_ducj3",
+            name:"Duck and Cover",
+            text:"<b>Play this card when activating a fighter.</b><br/><br/>\
+           This turn, the fighter may make two Shoot (Basic) actions, provided they use the same Basic or Pistol weapon for both. After resolving these actions, the fighter may move D3\"."
+          },
+          {
+            id:"t_e_damn",
+            name:"Effigy of the Damned",
+            text:"<b>Play at the start of any turn.</b><br/><br/>\
+           Choose a terrain feature at least 6\" in diameter or a board tile. For the duration of this turn, any models entering or beginning their turns in the affected area must roll to see if they catch fire, just as if they had been hit by a weapon with the Blaze trait."
+          },
+          {
+            id:"t_faithres",
+            name:"Faithful and Resolved",
+            text:"<b>Play this gang tactic when activating a friendly fighter.</b><br/><br/>\
+            The fighter may immediately perform a Universal Article of Faith; no Faith dice are rolled and the Threshold test is automatically passed."
+          },
+          {
+            id:"t_luck_shottt",
+            name:"Lucky Shot",
+            text:"<b>Play this card after making either a hit roll, a wound roll or an injury roll.</b><br/><br/>\
+            You may immediately re-roll all of the dice for the roll you have just made. You must accept the result of the second roll, even if it is worse than the first."
+          },
+          {
+            id:"t_wagain",
+            name:"Wrong Again",
+            text:"<bPlay when one of your fighters is hit by a ranged attack.</b><br/><br/>\
+            Choose any other friendly fighter within range and line of sight of the attacking model. This chosen fighter becomes the new target for the attack, which is resolved as normal."
+          },
+          {
+            id:"t_npris",
+            name:"No Prisoners",
+            text:"<b>Play at the start of any End phase.</b><br/><br/>\
+            For the duration of the End phase, Seriously Injured enemy models making Recovery tests must roll two Injury dice and pick the worst result."
+          },
+          {
+            id:"t_puritythfire",
+            name:"Purity Through Fire",
+            text:"<b>Play this gang tactic when a friendly House Cawdor fighter makes a Shoot (Basic) or Fight (Basic) action using a weapon with the Blaze trait.</b><br/><br/>\
+            Until the end of the fighter's activation, hit targets become subject to the Blaze condition on a 2+, rather than the usual 4+."
+          },
+          {
+            id:"t_refire",
+            name:"Reaction Fire",
+            text:"<b>Play this gang tactic when an enemy model activates, before they perform any actions.</b><br/><br/>\
+           A friendly fighter may immediately perform a Shoot (Basic) action targeting the enemy model. This does not remove their Ready marker if they have one."
+          }
+        ]
       },
       {
         id: "underdog",

@@ -658,6 +658,84 @@ const DATA = {
             The Flesh Wound is ignored. Any other effects of the injury still apply."
           }
         ]
+      },{
+        id: "codys_deck",
+        name: "Cody's Deck",
+        cards: [
+          {
+            id:"t_click4",
+            name:"...Click",
+            text:"<b>Play this gang tactic after an enemy model has completed a Shoot (Basic) action after fully resolving any hits.</b><br/><br/>\
+            The weapon that was used to make the Shoot (Basic) action immediately runs Out of Ammo as if it had failed an Ammo test."
+          },
+          {
+            id:"t_dre_surge",
+            name:"Adrenaline Surge",
+            text:"<b>Play this gang tactic when activating a friendly fighter.</b><br/><br/>\
+            The fighter may perform an additional action this activation."
+          },
+          {
+            id:"t_ampavk",
+            name:"Ammo Pack",
+            text:"<b>Play this gang tactic instead of activating a fighter.</b><br/><br/>\
+            Choose a friendly Orlock fighter with the Munitioneer Skill. All friendly fighters within 6\" and line of sight of that fighter that have the Out of Ammo condition may immediately perform a free Reload (Simple) action. A fighter can perform this action even if they would normally be unable to do so (for example, if their weapon has the Scarce trait). Seriously Injured fighters, however, are not affected by this gang tactic."
+          },
+          {
+            id:"t_cfire",
+            name:"CrossFire",
+            text:"<b>Play this card when a fighter makes a ranged attack against a target who has already been shot at by a friendly fighter.</b><br/><br/>\
+            The hit roll succeeds automatically."
+          },
+          {
+            id:"t_prop_prep_3",
+            name:"Proper Preparation",
+            text:"<b>Play this gang tactic before either player deploys their gang.</b><br/><br/>\
+            One friendly fighter's weapons all gain the Plentiful trait, unless they already have the Scarce trait in which case they lose the Scarce trait."
+          },
+          {
+            id:"t_healthy_p",
+            name:"Healthy Paranoia",
+            text:"<b>Play when activating a fighter.</b><br/><br/>\
+           Tuck this card under that fighter's card. For the rest of the battle, the fighter has a 360° vision arc."
+          },
+          {
+            id:"t_last_g",
+            name:"Last Gasp",
+            text:"<b>Play this gang tactic when a friendly fighter is taken Out of Action.</b><br/><br/>\
+            Before the fighter is removed from play, they may perform either a free Shoot (Basic) or Fight (Basic) action."
+          },
+          {
+            id:"t_luck_find",
+            name:"Lucky Find",
+            text:"<b>Play this gang tactic when activating a model with at least one weapon Out of Ammo.</b><br/><br/>\
+            One of the model's weapons is automatically reloaded, no Ammo test is needed."
+          },
+          {
+            id:"t_poimfbl",
+            name:"Point Blank Shot",
+            text:"<b>Play this card when a fighter makes a Fight action or a Charge action.</b><br/><br/>\
+            Pick one of the fighter's ranged weapons that does not have the Blast trait or Template trait. For the duration of this turn, that weapon can be used in close combat in the same way as a pistol."
+          },
+          {
+            id:"t_seismic",
+            name:"Seismic Surprise",
+            text:"<b>Play this gang tactic when a friendly Orlock fighter performs a Shoot (Basic) action with a frag grenade.</b><br/><br/>\
+            Until the end of their activation, this fighter's frag grenades gain the Seismic trait."
+          },
+          {
+            id:"t_solidarity",
+            name:"Solidarity",
+            text:"<b>Play at the start of any round.</b><br/><br/>\
+            For the duration of the round, fighters from your gang automatically pass any Cool checks they make as long as they are within 6\" of another fighter from your gang."
+          },
+          {
+            id:"t_tnails",
+            name:"Tough as Nail",
+            text:"<b>Play this gang tactic during the Priority phase of any round, after Roll for Priority, but before Ready Fighters.</b><br/><br/>\
+            Choose a friendly Orlock fighter with the Gang Hierarchy (x) special rule. For the remainder of this battle, roll a D6 each time the chosen fighter suffers a wound (roll separately for each wound caused by a single attack). On a 2+, that wound is ignored. On a 1, the fighter suffers the wound as normal and this gang tactic is immediately discarded.\
+            Should the fighter suffer an injury without suffering a wound (for example, due to a weapon with the Gas trait), this gang tactic is immediately discarded."
+          }
+        ]
       },
       {
         id: "underdog",

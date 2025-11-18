@@ -39,10 +39,10 @@ const DATA = {
       settlements: [],
       fighters: [
           {id: "oswitch", "name": "Oblock Switchyion", "role": "Leader", "rating": 330},
-          {id: "dtmil", "name": "DT Millz", "role": "Champion", "rating": 225},
-          {id: "vonin", "name": "Von Incarnate", "role": "Champion", "rating": 170},
+          {id: "dtmil", "name": "DT Millz", "role": "Champion", "rating": 285},
+          {id: "vonin", "name": "Von Incarnate", "role": "Champion", "rating": 180},
           {id: "nephe", "name": "Nephew", "role": "Ganger", "rating": 90},
-          {id: "luca", "name": "Luca Brasi", "role": "Ganger", "rating": 115},
+          {id: "luca", "name": "Brickman", "role": "Ganger", "rating": 115},
           {id: "47", "name": "47", "role": "Ganger", "rating": 100},
           {id: "slid2", "name": "Mr Slide Two Times", "role": "Specialist", "rating": 125},
           {id: "biggieche", "name": "Biggie Chee", "role": "Prospect", "rating": 95}
@@ -60,7 +60,8 @@ const DATA = {
           {id: "delvol", "name": "Delius Voldus", "role": "Ganger", "rating": 90},
           {id: "enokz", "name": "Enok the Zealot", "role": "Ganger", "rating": 120},
           {id: "servit", "name": "Servitor Z-00", "role": "Ganger", "rating": 65},
-          {id: "fimalk", "name": "Fiori Malok", "role": "Champion", "rating": 145}
+          {id: "fimalk", "name": "Fiori Malok", "role": "Champion", "rating": 145},
+          {id: "servit", "name": "Lazy Eye Larry", "role": "Ganger", "rating": 145}
         ]
     },
     {

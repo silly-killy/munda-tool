@@ -25,9 +25,9 @@ const DATA = {
         {id: "iago", "name": "Iago", "role": "Champion", "rating": 160},
         {id: "lear", "name": "Lear", "role": "Champion", "rating": 245},
         {id: "hamlet", "name": "Hamlet", "role": "Specialist", "rating": 160},
-        {id: "mercutio", "name": "Mercutio", "role": "Ganger", "rating": 70},
-        {id: "horatio", "name": "Horatio", "role": "Ganger", "rating": 70},
-        {id: "macbeth", "name": "MacBeth", "role": "Juve", "rating": 50},
+        {id: "mercutio", "name": "Mercutio", "role": "Ganger", "rating": 85},
+        {id: "horatio", "name": "Horatio", "role": "Ganger", "rating": 85},
+        {id: "macbeth", "name": "MacBeth", "role": "Juve", "rating": 65},
         {id: "titania", "name": "Titania", "role": "Prospect", "rating": 80},
         {id: "henry", "name": "Henry", "role": "Brute", "rating": 205}
       ]
@@ -44,7 +44,6 @@ const DATA = {
           {id: "nephe", "name": "Nephew", "role": "Ganger", "rating": 90},
           {id: "luca", "name": "Brickman", "role": "Ganger", "rating": 115},
           {id: "47", "name": "47", "role": "Ganger", "rating": 100},
-          {id: "slid2", "name": "Mr Slide Two Times", "role": "Specialist", "rating": 125},
           {id: "biggieche", "name": "Biggie Chee", "role": "Prospect", "rating": 95}
         ]
     },
@@ -635,10 +634,10 @@ const DATA = {
             A readied fighter in your gang may immediately take a shot at the enemy fighter with a Pistol or Basic weapon. However, they must subtract 1 from the hit roll."
           },
           {
-            id:"t_reload",
-            name:"Reload!",
-            text:"<b>Play this gang tactic at the start of any End phase.</b><br/><br/>\
-            Every friendly model may perform an immediate free Reload (Simple) action."
+            id:"t_b_and_switch2",
+            name:"Bait and Switch",
+            text:"<b>Play this card instead of activating a fighter.</b><br/><br/>\
+            Take a Ready marker from any of your fighters and place it on a fighter who has already activated this round."
           },
           {
             id:"t_service_tinnels1",

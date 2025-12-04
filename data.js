@@ -6,13 +6,16 @@ const DATA = {
     keywords: ["gang_hierarchy_leader", "plentiful"],
     settlements: [],
     fighters: [
-      {id: "ringleader", "name": "Ring Master", "role": "Leader", "rating": 300},
+      {id: "ringleader", "name": "Ring Master", "role": "Leader", "rating": 335},
       {id: "homesless", "name": "Homeless Man", "role": "Ganger", "rating": 130},
       {id: "fireperformer", "name": "Fire Performer", "role": "Champion", "rating": 240},
       {id: "j3a", "name": "Jonny 3-Arms", "role": "Ganger", "rating": 90},
       {id: "lmercu", "name": "Lady Mercury", "role": "Ganger", "rating": 90},
       {id: "slug", "name": "Slug", "role": "Ganger", "rating": 145},
-      {id: "freak", "name": "The FREAK", "role": "Brute", "rating": 250}
+      {id: "freak", "name": "The FREAK", "role": "Brute", "rating": 260},
+      {id: "larrmoe", "name": "Larry and Moe", "role": "Ganger", "rating": 125},
+      {id: "spike", "name": "Spike", "role": "Ganger", "rating": 55},
+      {id: "warhead", "name": "War Head", "role": "Ganger", "rating": 360},
       ]
     },
     {
@@ -22,14 +25,15 @@ const DATA = {
     settlements: [],
     fighters: [
         {id: "billy_shakes", "name": "Billy Shakes", "role": "Leader", "rating": 210},
-        {id: "iago", "name": "Iago", "role": "Champion", "rating": 160},
+        {id: "iago", "name": "Iago", "role": "Champion", "rating": 165},
         {id: "lear", "name": "Lear", "role": "Champion", "rating": 245},
         {id: "hamlet", "name": "Hamlet", "role": "Specialist", "rating": 160},
         {id: "mercutio", "name": "Mercutio", "role": "Ganger", "rating": 85},
         {id: "horatio", "name": "Horatio", "role": "Ganger", "rating": 85},
         {id: "macbeth", "name": "MacBeth", "role": "Juve", "rating": 65},
-        {id: "titania", "name": "Titania", "role": "Prospect", "rating": 80},
-        {id: "henry", "name": "Henry", "role": "Brute", "rating": 205}
+        {id: "titania", "name": "Titania", "role": "Prospect", "rating": 90},
+        {id: "henry", "name": "Henry", "role": "Brute", "rating": 205},
+        {id: "phia", "name": "Ophelia", "role": "Ganger", "rating": 100},
       ]
     },
     {
@@ -53,14 +57,15 @@ const DATA = {
       keywords: ["infiltrate", "nerves_of_steel", "fearsome"],
       settlements: [],
       fighters: [
-          {id: "sal", "name": "Sally", "role": "Leader", "rating": 385},
+          {id: "sal", "name": "Sally", "role": "Leader", "rating": 410},
           {id: "mstr", "name": "Mysterious Stranger", "role": "Champion", "rating": 260},
-          {id: "Cainx", "name": "Cain Xavier", "role": "Ganger", "rating": 135},
-          {id: "delvol", "name": "Delius Voldus", "role": "Ganger", "rating": 90},
+          {id: "Cainx", "name": "Cain Xavier", "role": "Ganger", "rating": 160},
+          {id: "delvol", "name": "Delius Voldus", "role": "Ganger", "rating": 135},
           {id: "enokz", "name": "Enok the Zealot", "role": "Ganger", "rating": 120},
           {id: "servit", "name": "Servitor Z-00", "role": "Ganger", "rating": 65},
-          {id: "fimalk", "name": "Fiori Malok", "role": "Champion", "rating": 145},
-          {id: "lazyee", "name": "Lazy Eye Larry", "role": "Champion", "rating": 180}
+          {id: "fimalk", "name": "Fiori Malok", "role": "Champion", "rating": 215},
+          {id: "lazyee", "name": "Lazy Eye Larry", "role": "Champion", "rating": 180},
+          {id: "billie", "name": "Buckshot Billy", "role": "Ganger", "rating": 95}
         ]
     },
     {
@@ -70,14 +75,14 @@ const DATA = {
       settlements: [],
       fighters: [
           {id: "priest", "name": "Nietzsche", "role": "Leader", "rating": 270},
-          {id: "fbrand", "name": "Voltaire", "role": "Champion", "rating": 245},
+          {id: "fbrand", "name": "Voltaire", "role": "Champion", "rating": 355},
           {id: "deacon", "name": "Dante", "role": "Champion", "rating": 245},
-          {id: "bret1", "name": "Pascal", "role": "Specialist", "rating": 95},
+          {id: "bret1", "name": "Pascal", "role": "Specialist", "rating": 100},
           {id: "bret2", "name": "Kant", "role": "Ganger", "rating": 95},
           {id: "bret3", "name": "Descartes", "role": "Ganger", "rating": 95},
-          {id: "bret4", "name": "Rousseau", "role": "Ganger", "rating": 95},
-          {id: "bpick1", "name": "Socrates", "role": "Juve", "rating": 30},
-          {id: "bpick2", "name": "Plato", "role": "Juve", "rating": 30},
+          {id: "bret4", "name": "Rousseau", "role": "Ganger", "rating": 150},
+          {id: "bpick1", "name": "Socrates", "role": "Juve", "rating": 40},
+          {id: "bpick2", "name": "Plato", "role": "Juve", "rating": 40},
           {id: "bpick3", "name": "Aristotle", "role": "Juve", "rating": 30},
           {id: "chrub", "name": "Hegel", "role": "Exotic Beast", "rating": 0},
           {id: "chrub2", "name": "Engels", "role": "Exotic Beast", "rating": 0}

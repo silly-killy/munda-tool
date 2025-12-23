@@ -75,7 +75,7 @@ const DATA = {
       settlements: [],
       fighters: [
           {id: "priest", "name": "Nietzsche", "role": "Leader", "rating": 270},
-          {id: "fbrand", "name": "Voltaire", "role": "Champion", "rating": 355},
+          {id: "fbrand", "name": "Voltaire", "role": "Champion", "rating": 360},
           {id: "deacon", "name": "Dante", "role": "Champion", "rating": 245},
           {id: "bret1", "name": "Pascal", "role": "Specialist", "rating": 100},
           {id: "bret2", "name": "Kant", "role": "Ganger", "rating": 95},
@@ -83,7 +83,7 @@ const DATA = {
           {id: "bret4", "name": "Rousseau", "role": "Ganger", "rating": 150},
           {id: "bpick1", "name": "Socrates", "role": "Juve", "rating": 40},
           {id: "bpick2", "name": "Plato", "role": "Juve", "rating": 40},
-          {id: "bpick3", "name": "Aristotle", "role": "Juve", "rating": 30},
+          {id: "bpick3", "name": "Aristotle", "role": "Juve", "rating": 40},
           {id: "chrub", "name": "Hegel", "role": "Exotic Beast", "rating": 0},
           {id: "chrub2", "name": "Engels", "role": "Exotic Beast", "rating": 0}
         ]
